@@ -1,0 +1,89 @@
+@mixin size($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
+@mixin flexBox(
+  $flex: flex,
+  $align: null,
+  $justify: null,
+  $direction: null,
+  $wrap: null,
+  $order: null
+) {
+  display: $flex;
+  align-items: $align;
+  justify-content: $justify;
+  flex-direction: $direction;
+  flex-wrap: $wrap;
+  order: $order;
+}
+@mixin flexCenter() {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@mixin centerAbsolute($direction: 'both') {
+  position: absolute;
+  @if($direction == 'both') {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+  }
+  @if($direction == 'horizontal') {
+      left: 50%;
+      transform: translateX(-50%);
+  }
+  @if($direction == 'vertical') {
+      top: 50%;
+      transform: translateY(-50%);
+  }
+}
+@mixin depth($depth) {
+  @if $depth < 1 {
+    box-shadow: none;
+  } @else if $depth > 5 {
+    @warn "Invalid $depth `#{$depth}` for mixin `card`.";
+  } @else {
+    box-shadow: bottom-shadow($depth), top-shadow($depth);
+  }
+}
+
+// Computes a top-shadow for a card effect.
+// @param {Number} $depth - depth level
+// @return {List}
+
+@function top-shadow($depth) {
+  $primary-offset: nth($shadowOffsetsTop, $depth) * 1px;
+  $blur: nth($shadowBlursTop, $depth) * 4px;
+  $color: rgba(black, nth($shadowOpacitiesTop, $depth));
+
+  @return 0 $primary-offset $blur $color;
+}
+
+// Computes a bottom-shadow for a card effect.
+// @param {Number} $depth - depth level
+// @return {List}
+@function bottom-shadow($depth) {
+  $primary-offset: nth($shadowOffsetsBottom, $depth) * 1px;
+  $blur: nth($shadowBlursBottom, $depth) * 5px;
+  $color: rgba(black, nth($shadowOpacitiesBottom, $depth));
+  @return 0 $primary-offset $blur $color;
+}
+// From $breakpoint and up
+@mixin minWidth($breakpoint) {
+  @media only screen and (min-width: $breakpoint) {
+      @content;
+  }
+}
+// From $breakpoint and down
+@mixin maxWidth($breakpoint) {
+  @media only screen and (max-width: $breakpoint) {
+      @content;
+  }
+}
+// From $min-width to $max-width
+@mixin responsiveFromTo($min-width, $max-width) {
+  @media (min-width: $min-width) and (max-width: $max-width) {
+      @content;
+  }
+}

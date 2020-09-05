@@ -13,22 +13,22 @@ export default {
   },
 
   mutations: {
-    setUser(state, payload) {
+    SET_USER(state, payload) {
       state.currentUser = payload
     },
 
-    setLogout(state) {
+    SET_LOGOUT(state) {
       state.currentUser = null
     },
 
-    setProcessing(state, payload) {
+    SET_PROCESSING(state, payload) {
       state.processing = payload
     },
   },
 
   actions: {
     async login({ commit }, payload) {
-      commit('setProcessing', true)
+      commit('SET_PROCESSING', true)
       try {
         const response = await this.$axios.post('/v1/auth/login', payload)
         if (response.status === 200) {
@@ -41,18 +41,18 @@ export default {
           }
           localStorage.setItem('user', JSON.stringify(item))
           this.$cookies.set('token', response.data.data.token)
-          commit('setUser', item)
+          commit('SET_USER', item)
         }
       } catch (e) {
         throw e.response.data.message[0].description
       } finally {
-        commit('setProcessing', false)
+        commit('SET_PROCESSING', false)
       }
     },
 
     logout({ commit }) {
       localStorage.removeItem('user')
-      commit('setLogout')
+      commit('SET_LOGOUT')
       this.$cookies.remove('token')
     },
   },

@@ -48,8 +48,9 @@ export default {
   plugins: [
     '@/plugins/bootstrap',
     '@/plugins/veeValidate',
-    { src: '~/plugins/vue-notification', mode: 'client' },
     '@/plugins/vue-sidebar-menu',
+    { src: '~/plugins/vue-notification', mode: 'client' },
+    { src: '~/plugins/infinite-loading', mode: 'client' },
   ],
   /*
    ** Auto import components

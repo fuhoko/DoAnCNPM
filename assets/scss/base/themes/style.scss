@@ -36,7 +36,6 @@ input {
   padding: 40px;
   background: $background-color;
   min-height: calc(100vh - #{$navbar-height});
-  width: calc(100vw - 320px );
 }
 
 /* Buttons */
@@ -541,8 +540,7 @@ input {
   // }
 }
 
-/* 10.Menu*/
-
+/* Menu */
 .v-sidebar-menu {
   margin-top: $navbar-height;
   @include depth(2);
@@ -566,8 +564,19 @@ input {
   }
 }
 
-/* 21.Forms */
+/* Cards */
+.card {
+  border: initial;
+  background: $foreground-color;
+  border-radius: $border-radius-rounded;
+  @include depth(1);
 
+  .card-body {
+    padding: 1.75rem;
+  }
+}
+
+/* Forms */
 .form-control,
 .form-control.is-valid {
   height: initial;
@@ -582,8 +591,18 @@ input {
   color: $mine-shaft;
 }
 
+.custom-checkbox .custom-control-label::before {
+  box-shadow: initial !important;
+  border-radius: 0.25rem;
+}
 
-/* 28.Spinner */
+.custom-control-input:checked ~ .custom-control-label::before {
+  background-color: $main-color;
+  border: 1px solid $main-color !important;
+}
+
+
+/* Spinner */
 
 .spinner {
   width: 36px;
@@ -637,7 +656,7 @@ input {
 }
 
 
-/* 34.Floating Label */
+/* Floating Label */
 
 .has-float-label {
   display: block;
@@ -757,8 +776,6 @@ input {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
-
-
 
 
 

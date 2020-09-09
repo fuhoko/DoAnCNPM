@@ -65,12 +65,6 @@
               <span class="bounce2"></span>
               <span class="bounce3"></span>
             </span>
-            <span class="icon success">
-              <i class="simple-icon-check"></i>
-            </span>
-            <span class="icon fail">
-              <i class="simple-icon-exclamation"></i>
-            </span>
             <span class="label">LOGIN</span>
           </b-button>
         </div>
@@ -82,7 +76,7 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   layout: 'authentication',
   middleware: 'notAuthenticated',
@@ -92,16 +86,14 @@ export default {
         email: null,
         password: null,
       },
+      processing: false,
     }
-  },
-
-  computed: {
-    ...mapGetters(['processing']),
   },
 
   methods: {
     ...mapActions(['login']),
     async submitFormLogin() {
+      this.processing = true
       try {
         await this.login(this.form)
         this.$router.push('/admin')
@@ -111,8 +103,9 @@ export default {
           type: 'error',
           title: 'Login error',
           text: e,
-          duration: 10000,
         })
+      } finally {
+        this.processing = false
       }
     },
   },

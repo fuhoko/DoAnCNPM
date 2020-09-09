@@ -4,12 +4,10 @@ export default {
       localStorage.getItem('user') != null
         ? JSON.parse(localStorage.getItem('user'))
         : null,
-    processing: false,
   },
 
   getters: {
     currentUser: (state) => state.currentUser,
-    processing: (state) => state.processing,
   },
 
   mutations: {
@@ -20,18 +18,13 @@ export default {
     SET_LOGOUT(state) {
       state.currentUser = null
     },
-
-    SET_PROCESSING(state, payload) {
-      state.processing = payload
-    },
   },
 
   actions: {
     async login({ commit }, payload) {
-      commit('SET_PROCESSING', true)
       try {
         const response = await this.$axios.post('/v1/auth/login', payload)
-        if (response.status === 200) {
+        if (response.status === 201) {
           const item = {
             avatar: response.data.data.avatar,
             email: response.data.data.email,
@@ -45,15 +38,15 @@ export default {
         }
       } catch (e) {
         throw e.response.data.message[0].description
-      } finally {
-        commit('SET_PROCESSING', false)
       }
     },
 
-    logout({ commit }) {
+    logout({ commit, dispatch }) {
       localStorage.removeItem('user')
-      commit('SET_LOGOUT')
       this.$cookies.remove('token')
+      commit('SET_ROLE_DEFAULT', { root: true })
+      commit('SET_PERMISSION_DEFAULT', { root: true })
+      commit('SET_LOGOUT')
     },
   },
 }

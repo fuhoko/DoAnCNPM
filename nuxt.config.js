@@ -46,11 +46,13 @@ export default {
    ** https://nuxtjs.org/guide/plugins
    */
   plugins: [
+    '@/utils/filters',
     '@/plugins/bootstrap',
     '@/plugins/veeValidate',
     '@/plugins/vue-sidebar-menu',
     { src: '~/plugins/vue-notification', mode: 'client' },
     { src: '~/plugins/infinite-loading', mode: 'client' },
+    { src: '~/plugins/perfect-scrollbar', mode: 'client' },
   ],
   /*
    ** Auto import components

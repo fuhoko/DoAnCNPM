@@ -31,7 +31,7 @@ export default {
       commit('setProcessing', true)
       try {
         const response = await this.$axios.post('/v1/auth/login', payload)
-        if (response.status === 200) {
+        if (response.status === 200 || response.status === 201) {
           const item = {
             avatar: response.data.data.avatar,
             email: response.data.data.email,

@@ -25,5 +25,16 @@ const data = [
       },
     },
   },
+  {
+    href: '/admin/users',
+    title: 'Users',
+    icon: {
+      element: 'b-icon',
+      attributes: {
+        scale: '0.8',
+        icon: 'person',
+      },
+    },
+  },
 ]
 export default data

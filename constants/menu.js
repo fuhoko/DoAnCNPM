@@ -1,7 +1,7 @@
 const data = [
   {
     header: true,
-    title: 'Permission',
+    title: 'User',
     hiddenOnCollapse: true,
   },
   {
@@ -16,7 +16,13 @@ const data = [
     },
   },
   {
-    title: 'Permission',
+    header: true,
+    title: 'Service',
+    hiddenOnCollapse: true,
+  },
+  {
+    href: '/admin/destination',
+    title: 'Destination',
     icon: {
       element: 'b-icon',
       attributes: {

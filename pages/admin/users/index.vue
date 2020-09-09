@@ -121,7 +121,7 @@
                   <b-form-group :label="`Role`">
                     <b-form-select v-model="newUser.roleId" class="mb-3">
                       <b-form-select-option
-                        v-for="(role, index) in roles"
+                        v-for="(role, index) in stateRole.roles"
                         :id="role.id"
                         :key="index"
                         :value="role.id"
@@ -244,7 +244,7 @@
 import { Breadcrumb } from '@/components/common'
 import { DataListUsers } from '@/components/uncommon'
 
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
@@ -307,8 +307,10 @@ export default {
       count: 'count',
       total: 'total',
       processing: 'processing',
-      roles: 'roles',
       roleSelected: 'roleSelected',
+    }),
+    ...mapState({
+      stateRole: (state) => state.role,
     }),
   },
   watch: {

@@ -49,7 +49,7 @@
       <b-modal ref="modal-edit" :title="`Edit User`" hide-footer scrollable>
         <FormEditUsers
           :user="data"
-          :roles="roles"
+          :roles="stateRole.roles"
           @submit-form-edit="submitFormEdit"
         ></FormEditUsers>
       </b-modal>
@@ -59,7 +59,7 @@
 
 <script>
 import { FormEditUsers } from '@/components/uncommon'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import moment from 'moment'
 export default {
@@ -73,8 +73,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      roles: 'roles',
+    ...mapState({
+      stateRole: (state) => state.role,
     }),
   },
   methods: {

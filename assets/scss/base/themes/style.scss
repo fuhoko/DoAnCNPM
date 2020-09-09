@@ -36,7 +36,6 @@ input {
     padding: 40px;
     background: $background-color;
     min-height: calc(100vh - #{$navbar-height});
-    width: calc(100vw - 320px);
 }
 
 
@@ -474,7 +473,96 @@ input {
 }
 
 
-/* 10.Menu*/
+/* pagination */
+
+.page-item {
+    padding: 10px;
+    // @include respond-below(sm) {
+    //   padding: 3px;
+    // }
+    .page-link {
+        outline: initial !important;
+        box-shadow: initial !important;
+        line-height: 1.7;
+        border-radius: 40px !important;
+        min-width: 38px;
+        text-align: center;
+        height: 38px;
+        padding: 0.55rem 0;
+        // @include respond-below(xs) {
+        //   min-width: 30px;
+        //   height: 30px;
+        //   line-height: 0.9;
+        //   font-size: 0.76rem;
+        // }
+        &.next {
+            background: $main-color;
+            color: $foreground-color;
+            border: 1px solid $main-color;
+        }
+        &.prev,
+        &.prev {
+            background: $main-color;
+            border: 1px solid $main-color;
+            color: $foreground-color;
+        }
+        &:first,
+        &.last {
+            background: transparent;
+            color: $main-color;
+            border: 1px solid $main-color;
+            border-radius: 30px;
+            &:hover {
+                background: $main-color;
+                color: $foreground-color;
+                border: 1px solid $main-color;
+            }
+        }
+        &:hover {
+            background-color: transparent;
+            border-color: lighten($main-color, 10%);
+            color: $main-color;
+        }
+    }
+    &.active .page-link {
+        background: transparent;
+        border: 1px solid $main-color;
+        color: $main-color;
+    }
+    &.disabled .page-link {
+        /*border-color: $separator-color;*/
+        border: initial;
+        color: $separator-color;
+        background: transparent;
+    }
+    &[role="separator"] .page-link {
+        color: $mine-shaft;
+    }
+}
+
+.page-link {
+    background-color: transparent;
+    border-color: transparent;
+    color: $mine-shaft;
+}
+
+.pagination-sm {
+    .page-item {
+        padding: 6px;
+        // @include respond-below(sm) {
+        //   padding: 3px;
+        // }
+        .page-link {
+            min-width: 30px;
+            height: 30px;
+            line-height: 0.9;
+            font-size: 0.76rem;
+        }
+    }
+}
+
+
+/* Menu */
 
 .v-sidebar-menu {
     margin-top: $navbar-height;
@@ -499,7 +587,20 @@ input {
 }
 
 
-/* 21.Forms */
+/* Cards */
+
+.card {
+    border: initial;
+    background: $foreground-color;
+    border-radius: $border-radius-rounded;
+    @include depth(1);
+    .card-body {
+        padding: 1.75rem;
+    }
+}
+
+
+/* Forms */
 
 .form-control,
 .form-control.is-valid {
@@ -515,8 +616,18 @@ input {
     color: $mine-shaft;
 }
 
+.custom-checkbox .custom-control-label::before {
+    box-shadow: initial !important;
+    border-radius: 0.25rem;
+}
 
-/* 28.Spinner */
+.custom-control-input:checked~.custom-control-label::before {
+    background-color: $main-color;
+    border: 1px solid $main-color !important;
+}
+
+
+/* Spinner */
 
 .spinner {
     width: 36px;
@@ -568,7 +679,7 @@ input {
 }
 
 
-/* 34.Floating Label */
+/* Floating Label */
 
 .has-float-label {
     display: block;

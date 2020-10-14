@@ -15,6 +15,5 @@ export default {
     Navbar,
     Sidebar,
   },
-  middleware: 'authenticated',
 }
 </script>

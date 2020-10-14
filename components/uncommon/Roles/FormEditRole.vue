@@ -9,7 +9,7 @@
         >
           <b-form-group label="Name role" class="mb-7">
             <b-form-input
-              v-model="form.name"
+              v-model.trim="form.name"
               :state="
                 validationContext.errors[0]
                   ? false
@@ -25,7 +25,7 @@
         </validation-provider>
 
         <b-form-group label="Description" class="mb-7">
-          <b-form-input v-model="form.description" />
+          <b-form-input v-model.trim="form.description" />
         </b-form-group>
 
         <b-form-group label="Permission" class="mb-0">
@@ -69,7 +69,12 @@
   </div>
 </template>
 <script>
+import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
+import 'vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css'
 export default {
+  components: {
+    PerfectScrollbar,
+  },
   props: {
     action: {
       type: String,

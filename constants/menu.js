@@ -1,3 +1,12 @@
+import store from '@/store'
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+console.log(
+  !store().getters.currentUser.role.permissions.some(
+    (item) => item.id === 1 || item.id === 2
+  )
+)
 const data = [
   {
     header: true,
@@ -6,12 +15,26 @@ const data = [
   },
   {
     href: '/admin/role',
-    title: 'Role',
+    title: 'Roles',
     icon: {
       element: 'b-icon',
       attributes: {
         scale: '0.8',
         icon: 'briefcase',
+      },
+    },
+    hidden: !store().getters.currentUser.role.permissions.some(
+      (item) => item.id === 1 || item.id === 2
+    ),
+  },
+  {
+    href: '/admin/users',
+    title: 'Users',
+    icon: {
+      element: 'b-icon',
+      attributes: {
+        scale: '0.8',
+        icon: 'person',
       },
     },
   },
@@ -22,23 +45,25 @@ const data = [
   },
   {
     href: '/admin/destination',
-    title: 'Destination',
+    exactPath: true,
+    title: 'Destinations',
     icon: {
       element: 'b-icon',
       attributes: {
         scale: '0.8',
-        icon: 'shield-check',
+        icon: 'cursor',
       },
     },
   },
   {
-    href: '/admin/users',
-    title: 'Users',
+    href: '/admin/category',
+    exactPath: true,
+    title: 'Categories',
     icon: {
       element: 'b-icon',
       attributes: {
         scale: '0.8',
-        icon: 'person',
+        icon: 'collection',
       },
     },
   },

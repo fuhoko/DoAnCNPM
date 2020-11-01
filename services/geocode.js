@@ -7,7 +7,7 @@ export default ({ $axios }, inject) => {
           {
             params: {
               address,
-              key: 'AIzaSyCv45asCJthye8h1mrrDxl66PBzUnBcbzA',
+              key: process.env.KEY_GOOGLE_API,
             },
           }
         )

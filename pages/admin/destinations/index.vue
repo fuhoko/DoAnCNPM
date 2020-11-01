@@ -1,10 +1,10 @@
 <template>
   <div>
     <div>
-      <breadcrumb heading="Destination"></breadcrumb>
+      <breadcrumb heading="Destinations"></breadcrumb>
     </div>
     <div>
-      <b-card title="Table Destination">
+      <b-card title="Manage Destination">
         <div class="mb-6 d-flex align-items-center">
           <div class="search-sm d-inline-block">
             <b-input
@@ -315,14 +315,11 @@ export default {
       this.$router.push({ query: { s: this.searchKeyword } })
     },
 
-    async onCreate(file, formDestination) {
+    async onCreate(file, form) {
       try {
         this.processing = true
-        formDestination.thumbnail = await this.uploadFileToS3(
-          file,
-          'Destinations'
-        )
-        await this.createDestination(formDestination)
+        form.thumbnail = await this.uploadFileToS3(file, 'Destinations')
+        await this.createDestination(form)
         this.$refs['modal-create'].hide()
         this.$fetch()
         this.$toast.success('Create successful')
@@ -360,13 +357,13 @@ export default {
       this.$refs['modal-update'].show()
     },
 
-    async onUpdate(file, formDestination) {
+    async onUpdate(file, form) {
       try {
         this.processing = true
         if (file) {
-          this.$fileApi.put(formDestination.thumbnail, file)
+          this.$fileApi.put(form.thumbnail, file)
         }
-        await this.updateDestination(formDestination)
+        await this.updateDestination(form)
         this.$refs['modal-update'].hide()
         this.$fetch()
         this.$toast.success('Update successful')

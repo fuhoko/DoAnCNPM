@@ -41,10 +41,8 @@ export default {
           params: state.query,
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
-        if (response.status === 200) {
-          commit('SET_DESTINATIONS', response.data.data)
-          commit('SET_DESTINATION_TOTAL', response.data.total)
-        }
+        commit('SET_DESTINATIONS', response.data.data)
+        commit('SET_DESTINATION_TOTAL', response.data.total)
       } catch (e) {
         throw e.response.data.message[0].description
       }

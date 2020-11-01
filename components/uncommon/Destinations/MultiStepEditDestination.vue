@@ -49,7 +49,7 @@
                 >
                   <b-form-group label="Name" class="mb-7">
                     <b-form-input
-                      v-model.trim="formDestination.enName"
+                      v-model.trim="form.enName"
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -64,7 +64,7 @@
                 >
                   <b-form-group label="Description" class="mb-7">
                     <b-form-input
-                      v-model.trim="formDestination.enDescription"
+                      v-model.trim="form.enDescription"
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -79,7 +79,7 @@
                 >
                   <b-form-group label="Content" class="mb-7">
                     <b-form-input
-                      v-model.trim="formDestination.enContent"
+                      v-model.trim="form.enContent"
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -102,7 +102,7 @@
                 >
                   <b-form-group label="Name" class="mb-7">
                     <b-form-input
-                      v-model.trim="formDestination.viName"
+                      v-model.trim="form.viName"
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -117,7 +117,7 @@
                 >
                   <b-form-group label="Description" class="mb-7">
                     <b-form-input
-                      v-model.trim="formDestination.viDescription"
+                      v-model.trim="form.viDescription"
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -132,7 +132,7 @@
                 >
                   <b-form-group label="Content" class="mb-7">
                     <b-form-input
-                      v-model.trim="formDestination.viContent"
+                      v-model.trim="form.viContent"
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -160,7 +160,7 @@
                   >
                     <b-input-group>
                       <b-form-input
-                        v-model.trim="formDestination.address"
+                        v-model.trim="form.address"
                         :state="getValidationState(validationContext)"
                         @keyup.enter="previewLocation"
                       />
@@ -182,8 +182,8 @@
           </div>
           <google-map
             class="mb-7"
-            :lat="formDestination.latitude"
-            :lng="formDestination.longitude"
+            :lat="form.latitude"
+            :lng="form.longitude"
           ></google-map>
         </tab>
         <tab type="done">
@@ -235,7 +235,7 @@ export default {
     return {
       imageUrl: this.destination?.thumbnail ?? '',
       file: null,
-      formDestination: {
+      form: {
         enName: this.destination?.enName ?? '',
         enDescription: this.destination?.enDescription ?? '',
         enContent: this.destination?.enContent ?? '',
@@ -281,12 +281,10 @@ export default {
     },
     async previewLocation() {
       if (await this.$refs.formChild4.validate()) {
-        const location = await this.$geoCodeApi.get(
-          this.formDestination.address
-        )
+        const location = await this.$geoCodeApi.get(this.form.address)
         if (location) {
-          this.formDestination = {
-            ...this.formDestination,
+          this.form = {
+            ...this.form,
             ...location,
           }
         } else {
@@ -296,7 +294,7 @@ export default {
     },
 
     done() {
-      this.$emit('onSubmit', this.file, this.formDestination)
+      this.$emit('onSubmit', this.file, this.form)
     },
   },
 }

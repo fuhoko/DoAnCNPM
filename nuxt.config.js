@@ -1,3 +1,4 @@
+require('dotenv').config()
 export default {
   /*
    ** Nuxt rendering mode
@@ -66,6 +67,7 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    '@nuxtjs/dotenv',
   ],
   /*
    ** MomentJS for NuxtJS

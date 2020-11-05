@@ -8,7 +8,7 @@
         <div class="float-right mb-4">
           <b-button
             v-if="
-              $store.state.auth.currentUser.role.permissions.some(
+              stateAuth.currentUser.role.permissions.some(
                 (item) => item.name === 'ROLE_CREATE' || item.name === 'ALL'
               )
             "
@@ -23,7 +23,7 @@
           </b-button>
           <b-button
             v-if="
-              $store.state.auth.currentUser.role.permissions.some(
+              stateAuth.currentUser.role.permissions.some(
                 (item) => item.name === 'ROLE_DELETE' || item.name === 'ALL'
               )
             "
@@ -72,7 +72,7 @@
           </template>
           <template
             v-if="
-              $store.state.auth.currentUser.role.permissions.some(
+              stateAuth.currentUser.role.permissions.some(
                 (item) => item.name === 'ROLE_UPDATE' || item.name === 'ALL'
               )
             "

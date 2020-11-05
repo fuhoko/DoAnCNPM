@@ -17,6 +17,7 @@
           :items="stateCategory.categories"
           :language="language"
           @onAdd="onAdd"
+          @processing="processing"
         />
       </b-card>
     </div>
@@ -41,6 +42,7 @@ export default {
   data() {
     return {
       language: 'En',
+      processing: false,
     }
   },
   computed: {
@@ -48,10 +50,60 @@ export default {
       stateCategory: (state) => state.category,
     }),
   },
+  created() {
+    this.$bus.$on('onAdd', (payload) => this.onAdd(payload))
+    this.$bus.$on('onUpdate', (id, payload) => this.onUpdate(id, payload))
+    this.$bus.$on('onDelete', (id) => this.onDelete(id))
+  },
+  beforeDestroy() {
+    this.$bus.$off('onAdd')
+    this.$bus.$off('onUpdate')
+    this.$bus.$off('onDelete')
+  },
   methods: {
-    ...mapActions(['fetchDataCategories']),
-    onAdd(form) {
-      console.log(form)
+    ...mapActions([
+      'fetchDataCategories',
+      'addCategory',
+      'updateCategory',
+      'deleteCategory',
+    ]),
+    async onAdd(payload) {
+      try {
+        this.processing = true
+        await this.addCategory(payload)
+        this.$fetch()
+        this.$toast.success('Add successful')
+      } catch (e) {
+        this.$toast.error(e)
+      } finally {
+        this.processing = false
+      }
+    },
+
+    async onUpdate(id, payload) {
+      try {
+        this.processing = true
+        await this.updateCategory({ id, payload })
+        this.$fetch()
+        this.$toast.success('Update successful')
+      } catch (e) {
+        this.$toast.error(e)
+      } finally {
+        this.processing = false
+      }
+    },
+
+    async onDelete(id) {
+      try {
+        this.processing = true
+        await this.deleteCategory(id)
+        this.$fetch()
+        this.$toast.success('Delete successful')
+      } catch (e) {
+        this.$toast.error(e)
+      } finally {
+        this.processing = false
+      }
     },
   },
 }

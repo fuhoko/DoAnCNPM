@@ -54,6 +54,7 @@ export default {
     '@/plugins/veeValidate',
     '@/plugins/vue-context-menu',
     '@/plugins/google-maps',
+    '@/plugins/bus.js',
     { src: '@/plugins/vue-shortkey.js', mode: 'client' },
   ],
   /*

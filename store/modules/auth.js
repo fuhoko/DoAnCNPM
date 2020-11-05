@@ -26,7 +26,6 @@ export default {
         const response = await this.$axios.post('/v1/auth/login', payload)
         this.$cookies.set('token', response.data.data.token)
       } catch (e) {
-        console.log(e.response.data.message[0].description)
         throw e.response.data.message[0].description
       }
     },

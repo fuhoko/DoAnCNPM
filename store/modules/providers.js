@@ -1,82 +1,82 @@
 /* eslint-disable prettier/prettier */
 export default {
     state: {
-        users: null,
-        user: null,
+        providers: null,
+        provider: null,
         query: {
             page: 1,
             limit: 5,
-            sort: 'fullName,ASC',
+            sort: 'name,ASC',
             s: null,
         },
         total: 0,
         count: 0,
         pageCount: 1,
-        selectedUser: [],
-        deletedUsers: null,
-        deletedSelectedUser: [],
+        selectedProvider: [],
+        deletedProviders: null,
+        deletedSelectedProvider: [],
     },
 
     mutations: {
-        SET_USERS(state, payload) {
-            state.users = payload
+        SET_PROVIDERS(state, payload) {
+            state.providers = payload
         },
-        SET_USER(state, payload) {
-            state.user = payload
+        SET_PROVIDER(state, payload) {
+            state.provider = payload
         },
-        SET_USER_TOTAL(state, payload) {
+        SET_PROVIDER_TOTAL(state, payload) {
             state.total = payload
         },
         SET_PAGE_COUNT(state, payload) {
             state.pageCount = payload
         },
-        SET_DELETED_USERS(state, payload) {
-            state.deletedUsers = payload
+        SET_DELETED_PROVIDERS(state, payload) {
+            state.deletedProviders = payload
         },
-        SET_DELETED_SELECTED_USER(state, payload) {
-            state.deletedSelectedUser = payload
+        SET_DELETED_SELECTED_PROVIDER(state, payload) {
+            state.deletedSelectedProvider = payload
         },
-        SET_USER_QUERY(state, query) {
+        SET_PROVIDER_QUERY(state, query) {
             state.query = {...state.query, ...query }
         },
-        SET_USER_SELECTED(state, payload) {
-            state.selectedUser = payload
+        SET_PROVIDER_SELECTED(state, payload) {
+            state.selectedProvider = payload
         },
-        SET_USER_DEFAULT(state) {
-            state.users = null
+        SET_PROVIDER_DEFAULT(state) {
+            state.providers = null
             state.page = 1
             state.limit = 5
             state.total = 0
             state.pageCount = 1
-            state.selectedUser = null
+            state.selectedProvider = null
         },
     },
 
     actions: {
-        async fetchDataUsers({ commit, state }) {
+        async fetchDataProviders({ commit, state }) {
             try {
-                const response = await this.$axios.get('/v1/users', {
+                const response = await this.$axios.get('/v1/providers', {
                     params: state.query,
                     headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                 })
 
                 if (response.status === 200) {
-                    commit('SET_USERS', response.data.data)
-                    commit('SET_USER_TOTAL', response.data.total)
+                    commit('SET_PROVIDERS', response.data.data)
+                    commit('SET_PROVIDER_TOTAL', response.data.total)
                     commit('SET_PAGE_COUNT', response.data.pageCount)
                 }
             } catch (e) {
                 throw e.response.data.message[0].description
             }
         },
-        setDataUserSelected({ commit, state }, payload) {
-            const newData = state.users.map((item) => ({...item }))
+        setDataProviderSelected({ commit, state }, payload) {
+            const newData = state.providers.map((item) => ({...item }))
             const target = newData.filter((item) => payload === item.id)[0]
-            commit('SET_USER_SELECTED', target)
+            commit('SET_PROVIDER_SELECTED', target)
         },
-        async addUser({ commit }, payload) {
+        async addProvider({ commit }, payload) {
             try {
-                const response = await this.$axios.post('/v1/users', payload, {
+                const response = await this.$axios.post('/v1/providers', payload, {
                     headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                 })
                 if (response.status === 200 || response.status === 201) {}
@@ -84,10 +84,10 @@ export default {
                 throw e.response.data.message[0].description
             }
         },
-        async deleteUser(context, payload) {
+        async deleteProvider(context, payload) {
             try {
                 for (let i = 0; i < payload.length; i++) {
-                    await this.$axios.delete(`/v1/users/${payload[i]}`, {
+                    await this.$axios.delete(`/v1/providers/${payload[i]}`, {
                         headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                     })
                 }
@@ -95,10 +95,10 @@ export default {
                 throw e.response.data.message[0].description
             }
         },
-        async editUser({ commit }, payload) {
+        async editProvider({ commit }, payload) {
 
             try {
-                const response = await this.$axios.patch(`/v1/users/${payload.id}`, payload, {
+                const response = await this.$axios.patch(`/v1/providers/${payload.id}`, payload, {
                     headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                 })
                 if (response.status === 200 || response.status === 201) {}
@@ -106,29 +106,29 @@ export default {
                 throw e.response.data.message[0].description
             }
         },
-        async fetchDeletedUsers({ commit, state }) {
+        async fetchDeletedProviders({ commit, state }) {
             try {
-                const response = await this.$axios.get('/v1/users/trashed', {
+                const response = await this.$axios.get('/v1/providers/trashed', {
                     params: state.query,
                     headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                 })
 
                 if (response.status === 200) {
-                    commit('SET_DELETED_USERS', response.data.data)
+                    commit('SET_DELETED_PROVIDERS', response.data.data)
                 }
             } catch (e) {
                 throw e.response.data.message[0].description
             }
         },
-        setDeletedUserSelected({ commit, state }, payload) {
-            const newData = state.deletedUsers.map((item) => ({...item }))
+        setDeletedProviderSelected({ commit, state }, payload) {
+            const newData = state.deletedProviders.map((item) => ({...item }))
             const target = newData.filter((item) => payload === item.id)[0]
-            commit('SET_USER_DELETED_SELECTED', target)
+            commit('SET_PROVIDER_DELETED_SELECTED', target)
         },
-        async restoreUser({ commit }, payload) {
+        async restoreProvider({ commit }, payload) {
             try {
                 for (let i = 0; i < payload.length; i++) {
-                    await this.$axios.patch(`/v1/users/${payload[i]}/restore`, payload, {
+                    await this.$axios.patch(`/v1/providers/${payload[i]}/restore`, payload, {
                         headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                     })
                 }
@@ -136,10 +136,10 @@ export default {
                 throw e.response.data.message[0].description
             }
         },
-        async deleteUserPer({ commit }, payload) {
+        async deleteProviderPer({ commit }, payload) {
             try {
                 for (let i = 0; i < payload.length; i++) {
-                    await this.$axios.delete(`/v1/users/${payload[i]}/permanently`, {
+                    await this.$axios.delete(`/v1/providers/${payload[i]}/permanently`, {
                         headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                     })
                 }
@@ -147,14 +147,14 @@ export default {
                 throw e.response.data.message[0].description
             }
         },
-        async fetchDataUser({ commit, state }, payload) {
+        async fetchDataProvider({ commit, state }, payload) {
             try {
-                const response = await this.$axios.get(`/v1/users/${payload}`, {
+                const response = await this.$axios.get(`/v1/providers/${payload}`, {
                     headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
                 })
 
                 if (response.status === 200) {
-                    commit('SET_USER', response.data.data)
+                    commit('SET_PROVIDER', response.data.data)
                 }
             } catch (e) {
                 throw e.response.data.message[0].description

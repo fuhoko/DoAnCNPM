@@ -9,7 +9,6 @@ $gray-700: #495057 !default;
 $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
 $black: #000 !default;
-
 // Base colors definitions
 $blue: #007bff !default;
 $indigo: #6610f2 !default;
@@ -37,30 +36,13 @@ $warning: $yellow !default;
 $danger: $red !default;
 $light: $gray-100 !default;
 $dark: $gray-800 !default;
-
 $main-color: $blue-chill !default;
 $separator-color-light: #f3f3f3;
 $separator-color: #d7d7d7;
 $background-color: #f8f8f8;
-$foreground-color : white;
+$foreground-color: white;
 $input-background: white;
 $button-text-color: #fff;
-
 // This table defines the theme colors (variant names)
 $theme-colors: () !default;
-$theme-colors: map-merge(
-  (
-    'primary': $primary,
-    'secondary': $secondary,
-    'success': $success,
-    'info': $info,
-    'warning': $warning,
-    'danger': $danger,
-    'light': $light,
-    'dark': $dark,
-    'purple': $purple,
-    'main-color': $main-color,
-    'background-color': $background-color,
-  ),
-  $theme-colors
-);
+$theme-colors: map-merge( ( 'primary': $primary, 'secondary': $secondary, 'success': $success, 'info': $info, 'warning': $warning, 'danger': $danger, 'light': $light, 'dark': $dark, 'purple': $purple, 'main-color': $main-color, 'background-color': $background-color, 'ACTIVE': $primary, 'INACTIVE': $danger, 'PENDING': $warning, ), $theme-colors);

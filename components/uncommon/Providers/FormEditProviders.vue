@@ -8,7 +8,7 @@
       >
         <b-form-group label="Full Name" class="mb-7">
           <b-form-input
-            v-model="form.fullName"
+            v-model="form.name"
             :state="
               validationContext.errors[0]
                 ? false
@@ -45,17 +45,6 @@
         </b-form-group>
       </validation-provider>
 
-      <b-form-group :label="`Role`">
-        <b-form-select v-model="form.roleId" class="mb-3">
-          <b-form-select-option
-            v-for="(role, index) in roles"
-            :id="role.id"
-            :key="index"
-            :value="role.id"
-            >{{ role.name }}</b-form-select-option
-          >
-        </b-form-select>
-      </b-form-group>
       <b-form-group :label="`Gender`">
         <v-select v-model="form.gender" :options="genderChoice" />
       </b-form-group>
@@ -85,14 +74,6 @@
       <b-form-group :label="`Phone number`">
         <b-form-input v-model="form.phone" />
       </b-form-group>
-      <b-form-group :label="`Status`">
-        <b-form-radio-group
-          v-model="form.status"
-          stacked
-          class="pt-2"
-          :options="statuses"
-        />
-      </b-form-group>
       <div class="float-right mt-5">
         <b-button type="submit" size="lg" variant="main-color">
           <span class="label">SUBMIT</span>
@@ -110,21 +91,15 @@
 import moment from 'moment'
 export default {
   props: {
-    roles: {
-      type: Array,
-      default: () => [],
-    },
-    user: {
+    provider: {
       type: Object,
       default: () => {
         return {
           id: '',
-          fullName: '',
+          name: '',
           email: '',
-          status: '',
           gender: '',
           birthday: '',
-          roleId: 0,
           phone: '',
         }
       },
@@ -137,19 +112,16 @@ export default {
   data() {
     return {
       form: {
-        id: this.user.id,
-        fullName: this.user.fullName,
-        email: this.user.email,
-        status: this.user.status,
-        gender: this.user.gender,
-        birthday: this.user.birthday,
-        roleId: this.user.roleId,
-        phone: this.user.phone,
+        id: this.provider.id,
+        name: this.provider.name,
+        email: this.provider.email,
+        gender: this.provider.gender,
+        birthday: this.provider.birthday,
+        phone: this.provider.phone,
       },
       moment,
       value: '',
       genderChoice: ['MALE', 'FEMALE'],
-      statuses: ['ACTIVE', 'PENDING', 'INACTIVE'],
     }
   },
   methods: {

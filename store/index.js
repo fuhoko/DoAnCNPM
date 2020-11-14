@@ -2,6 +2,7 @@
 import Vuex from 'vuex'
 import auth from './modules/auth.js'
 import users from './modules/users.js'
+import providers from './modules/providers.js'
 import role from './modules/role.js'
 import permission from './modules/permission.js'
 import destination from './modules/destination.js'

@@ -58,6 +58,20 @@ export default {
           ),
         },
         {
+          href: '/admin/providers',
+          title: 'Providers',
+          icon: {
+            element: 'b-icon',
+            attributes: {
+              scale: '0.8',
+              icon: 'people',
+            },
+          },
+          hidden: !this.$store.state.auth.currentUser.role.permissions.some(
+            (item) => item.name === 'PROVIDER_READ' || item.name === 'ALL'
+          ),
+        },
+        {
           header: true,
           title: 'Service',
           hiddenOnCollapse: true,

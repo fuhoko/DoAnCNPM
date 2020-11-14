@@ -42,11 +42,11 @@ const data = [
     href: '/admin/providers',
     title: 'Providers',
     icon: {
-        element: 'b-icon',
-        attributes: {
-            scale: '0.8',
-            icon: 'people',
-        },
+      element: 'b-icon',
+      attributes: {
+        scale: '0.8',
+        icon: 'person',
+      },
     },
   },
   {

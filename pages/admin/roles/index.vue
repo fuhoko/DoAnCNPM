@@ -1,14 +1,19 @@
 <template>
   <div>
     <div>
-      <breadcrumb heading="Role"></breadcrumb>
+      <breadcrumb heading="Roles"></breadcrumb>
     </div>
     <div>
-      <b-card class="mb-4" title="Table Role">
+      <b-card class="mb-4" title="Manage Role">
         <div class="float-right mb-4">
           <b-button
+            v-if="
+              stateAuth.currentUser.role.permissions.some(
+                (item) => item.name === 'ROLE_CREATE' || item.name === 'ALL'
+              )
+            "
             v-b-modal.modal-create
-            size="lg"
+            size="sm"
             variant="outline-main-color"
             class="mr-2"
           >
@@ -17,13 +22,18 @@
             >
           </b-button>
           <b-button
-            size="lg"
+            v-if="
+              stateAuth.currentUser.role.permissions.some(
+                (item) => item.name === 'ROLE_DELETE' || item.name === 'ALL'
+              )
+            "
+            size="sm"
             :class="{
               'btn-multiple-state': true,
               'show-spinner': processing,
             }"
             :disabled="disabled"
-            variant="outline-danger"
+            variant="danger"
             @click="onDeleteRole()"
           >
             <span class="spinner d-inline-block">
@@ -46,9 +56,10 @@
         >
           <template v-slot:cell(select)="{ item }">
             <b-form-checkbox
+              :checked="selected.includes(item.id)"
               @change="
                 (checked) => {
-                  toggleItem(item.id, checked)
+                  toggleSelection(item.id, checked)
                 }
               "
             />
@@ -59,10 +70,17 @@
           <template v-slot:cell(updatedAt)="data">
             {{ data.value | formatDate }}
           </template>
-          <template v-slot:cell(action)="{ item }">
+          <template
+            v-if="
+              stateAuth.currentUser.role.permissions.some(
+                (item) => item.name === 'ROLE_UPDATE' || item.name === 'ALL'
+              )
+            "
+            v-slot:cell(action)="{ item }"
+          >
             <b-button
               variant="outline-main-color"
-              size="lg"
+              size="sm"
               @click="fillDataFormEditRole(item.id)"
               >Edit</b-button
             >
@@ -77,7 +95,7 @@
           v-model="currentPage"
           size="sm"
           align="center"
-          :total-rows="stateRole.roleTotal"
+          :total-rows="stateRole.total"
         >
           <template v-slot:next-text>
             <b-icon icon="chevron-right" />
@@ -95,7 +113,7 @@
       </b-card>
     </div>
     <div>
-      <b-modal ref="modal-edit" scrollable hide-footer>
+      <b-modal ref="modal-update" hide-footer>
         <FormEditRole
           action="Update"
           :role="stateRole.roleSelected"
@@ -106,7 +124,7 @@
       </b-modal>
     </div>
     <div>
-      <b-modal id="modal-create" ref="modal-create" scrollable hide-footer>
+      <b-modal id="modal-create" ref="modal-create" hide-footer>
         <FormEditRole
           action="Create"
           :permissions="statePermission.permissions"
@@ -115,25 +133,27 @@
         ></FormEditRole>
       </b-modal>
     </div>
-    <div>
-      <notifications group="notify" />
-    </div>
   </div>
 </template>
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import { Breadcrumb } from '@/components/common'
-import { FormEditRole } from '@/components/uncommon/Role'
+import { FormEditRole } from '@/components/uncommon'
 export default {
   layout: 'admin',
+  middleware: ['authenticated', 'isRoleManager'],
   components: {
     Breadcrumb,
     FormEditRole,
   },
   async fetch() {
-    this.setRoleQuery(this.$route.query)
-    await this.fetchDataRoles()
-    await this.fetchDataPermissions()
+    try {
+      this.setRoleQuery(this.$route.query)
+      await this.fetchDataRoles()
+      await this.fetchDataPermissions()
+    } catch (e) {
+      this.$toast.error(e)
+    }
   },
   data() {
     return {
@@ -142,18 +162,18 @@ export default {
       disabled: true,
       fields: [
         'select',
-        'id',
+        { key: 'id', label: 'Index' },
         'name',
         'description',
         'createdAt',
         'updatedAt',
-        'deletedAt',
         'action',
       ],
     }
   },
   computed: {
     ...mapState({
+      stateAuth: (state) => state.auth,
       stateRole: (state) => state.role,
       statePermission: (state) => state.permission,
     }),
@@ -163,7 +183,7 @@ export default {
         else return 1
       },
       set(val) {
-        this.$route.query.page = val
+        this.$router.push({ query: { page: val } })
       },
     },
   },
@@ -198,25 +218,15 @@ export default {
         await this.createRole(payload)
         this.$refs['modal-create'].hide()
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Edit status',
-          text: 'Create role successfully',
-        })
+        this.$toast.success('Create successful')
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Edit status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }
     },
 
-    toggleItem(idItem, checked) {
+    toggleSelection(idItem, checked) {
       if (checked) {
         this.selected.push(idItem)
       } else {
@@ -230,19 +240,9 @@ export default {
         await this.deleteRole(this.selected)
         this.selected = 0
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Edit status',
-          text: 'Delete roles successfully',
-        })
+        this.$toast.success('Delete successful')
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Edit status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }
@@ -250,28 +250,18 @@ export default {
 
     async fillDataFormEditRole(idItem) {
       await this.setDataRoleSelected(idItem)
-      this.$refs['modal-edit'].show()
+      this.$refs['modal-update'].show()
     },
 
     async onUpdateRole(payload) {
       try {
         this.processing = true
         await this.updateRole(payload)
-        this.$refs['modal-edit'].hide()
+        this.$refs['modal-update'].hide()
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Edit status',
-          text: 'Edit successfully',
-        })
+        this.$toast.success('Update successful')
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Edit status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }

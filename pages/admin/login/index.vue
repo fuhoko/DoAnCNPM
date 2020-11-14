@@ -76,9 +76,6 @@
         </div>
       </b-form>
     </validation-observer>
-    <div>
-      <notifications group="error" />
-    </div>
   </div>
 </template>
 <script>
@@ -97,19 +94,15 @@ export default {
   },
 
   methods: {
-    ...mapActions(['login']),
+    ...mapActions(['login', 'getMe']),
     async submitFormLogin() {
       this.processing = true
       try {
         await this.login(this.form)
+        await this.getMe()
         this.$router.push('/admin')
       } catch (e) {
-        this.$notify({
-          group: 'error',
-          type: 'error',
-          title: 'Login error',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }

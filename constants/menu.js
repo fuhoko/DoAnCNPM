@@ -39,6 +39,17 @@ const data = [
     },
   },
   {
+    href: '/admin/providers',
+    title: 'Providers',
+    icon: {
+      element: 'b-icon',
+      attributes: {
+        scale: '0.8',
+        icon: 'person',
+      },
+    },
+  },
+  {
     header: true,
     title: 'Service',
     hiddenOnCollapse: true,

@@ -2,7 +2,7 @@
   <b-card
     :class="{
       'd-flex flex-row': true,
-      active: selectedUser.includes(data.id),
+      active: selectedProvider.includes(data.id),
     }"
     no-body
     @click.prevent="toggleItem($event, data.id)"
@@ -20,8 +20,8 @@
             alt="Center image"
           ></b-img>
         </div>
-        <router-link :to="`/admin/users/${data.id}`" class="w-40 w-sm-100">
-          <p class="list-item-heading mb-0 truncate">{{ data.fullName }}</p>
+        <router-link :to="`providers/${data.id}`" class="w-40 w-sm-100">
+          <p class="list-item-heading mb-0 truncate">{{ data.name }}</p>
         </router-link>
         <p class="mb-0 text-muted text-small w-50 w-sm-100">
           {{ data.email }}
@@ -36,20 +36,17 @@
           {{ moment(data.birthday).format('DD-MM-YYYY') }}
         </p>
         <div class="w-15 w-sm-100">
-          <b-badge pill :variant="data.status">{{ data.status }}</b-badge>
-        </div>
-        <div class="w-15 w-sm-100">
           <b-button
             variant="outline-main-color"
             size="sm"
-            @click="fillDataFormEditUser(data.id)"
+            @click="fillDataFormEditProvider(data.id)"
             >Edit</b-button
           >
         </div>
       </div>
       <div class="custom-control custom-checkbox pl-1 align-self-center pr-4">
         <b-form-checkbox
-          :checked="selectedUser.includes(data.id)"
+          :checked="selectedProvider.includes(data.id)"
           class="itemCheck mb-0"
         />
       </div>
@@ -57,19 +54,19 @@
     <div>
       <b-modal
         ref="modal-edit"
-        :title="`Edit User`"
         no-close-on-backdrop
         no-close-on-esc
+        :title="`Edit Provider`"
         hide-footer
         scrollable
       >
-        <FormEditUsers
-          :user="data"
-          :roles="roles"
+        <FormEditProviders
+          :provider="data"
           :processing="processing"
+          no-close-on-backdrop
           @hide-modal="hideModal"
           @submit-form-edit="submitFormEdit"
-        ></FormEditUsers>
+        ></FormEditProviders>
       </b-modal>
     </div>
     <div>
@@ -80,25 +77,21 @@
 </template>
 
 <script>
-import { FormEditUsers } from '@/components/uncommon/Users'
+import { FormEditProviders } from '@/components/uncommon/Providers'
 
 import moment from 'moment'
 import { mapActions } from 'vuex'
 export default {
   components: {
-    FormEditUsers,
+    FormEditProviders,
   },
   props: {
     data: {
       type: Object,
       default: () => {},
     },
-    selectedUser: {
-      name: 'selected-user',
-      type: Array,
-      default: () => [],
-    },
-    roles: {
+    selectedProvider: {
+      name: 'selected-provider',
       type: Array,
       default: () => [],
     },
@@ -114,22 +107,22 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['editUser']),
+    ...mapActions(['editProvider']),
     toggleItem(event, itemId) {
       this.$emit('toggle-item', event, itemId)
     },
     async submitFormEdit(form) {
       try {
         this.processing = true
-        console.log('Edit user clicked - Edit User: ', form)
-        await this.editUser(form)
+        console.log('Edit provider clicked - Edit provider: ', form)
+        await this.editProvider(form)
         this.fetch()
         this.$refs['modal-edit'].hide()
         this.$notify({
           group: 'notify',
           type: 'success',
           title: 'Edit status',
-          text: 'Edit user successfully',
+          text: 'Edit provider successfully',
           duration: 10000,
         })
       } catch (e) {
@@ -142,7 +135,7 @@ export default {
         })
       }
     },
-    fillDataFormEditUser(id) {
+    fillDataFormEditProvider(id) {
       this.$refs['modal-edit'].show()
     },
     hideModal() {

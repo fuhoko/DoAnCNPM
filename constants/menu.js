@@ -1,35 +1,57 @@
-const data = [
-  {
-    header: true,
-    title: 'User',
-    hiddenOnCollapse: true,
-  },
-  {
-    href: '/admin/role',
-    title: 'Role',
-    icon: {
-      element: 'b-icon',
-      attributes: {
-        scale: '0.8',
-        icon: 'briefcase',
-      },
+/* eslint-disable prettier/prettier */
+const data = [{
+        header: true,
+        title: 'User',
+        hiddenOnCollapse: true,
     },
-  },
-  {
-    header: true,
-    title: 'Service',
-    hiddenOnCollapse: true,
-  },
-  {
-    href: '/admin/destination',
-    title: 'Destination',
-    icon: {
-      element: 'b-icon',
-      attributes: {
-        scale: '0.8',
-        icon: 'shield-check',
-      },
+    {
+        href: '/admin/role',
+        title: 'Role',
+        icon: {
+            element: 'b-icon',
+            attributes: {
+                scale: '0.8',
+                icon: 'briefcase',
+            },
+        },
     },
-  },
+    {
+        header: true,
+        title: 'Service',
+        hiddenOnCollapse: true,
+    },
+    {
+        href: '/admin/destination',
+        title: 'Destination',
+        icon: {
+            element: 'b-icon',
+            attributes: {
+                scale: '0.8',
+                icon: 'shield-check',
+            },
+        },
+    },
+    {
+        href: '/admin/users',
+        title: 'Users',
+        icon: {
+            element: 'b-icon',
+            attributes: {
+                scale: '0.8',
+                icon: 'person',
+            },
+        },
+    },
+    {
+        href: '/admin/providers',
+        title: 'Providers',
+        icon: {
+            element: 'b-icon',
+            attributes: {
+                scale: '0.8',
+                icon: 'people',
+            },
+        },
+    },
 ]
 export default data

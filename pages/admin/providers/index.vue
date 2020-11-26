@@ -3,7 +3,7 @@
     <b-col class="disable-text-selection">
       <b-row>
         <b-col xs="12">
-          <breadcrumb heading="Users"></breadcrumb>
+          <breadcrumb heading="Providers"></breadcrumb>
           <div class="top-right-button-container">
             <b-button
               v-b-modal.modalright
@@ -11,17 +11,17 @@
               size="lg"
               class="top-right-button"
             >
-              <b-icon icon="file-person" aria-label="Add User"> </b-icon>
-              NEW USER
+              <b-icon icon="file-person" aria-label="Add Provider"> </b-icon>
+              NEW PROVIDER
             </b-button>
-            <router-link :to="`users/deletedUsers`">
+            <router-link :to="`providers/deletedProviders`">
               <b-button
                 variant="outline-danger"
                 size="lg"
                 class="top-right-button"
               >
-                <b-icon icon="trash" aria-label="Deleted Users"> </b-icon>
-                DELETED USERS
+                <b-icon icon="trash" aria-label="Deleted Providers"> </b-icon>
+                DELETED PROVIDERS
               </b-button>
             </router-link>
             <b-button-group>
@@ -57,7 +57,7 @@
             <b-modal
               id="modalright"
               ref="modalright"
-              :title="`Add New User`"
+              :title="`Add New Provider`"
               modal-class="modal-right"
               hide-footer
             >
@@ -70,29 +70,7 @@
                   >
                     <b-form-group :label="`Email`">
                       <b-form-input
-                        v-model="newUser.email"
-                        :state="
-                          validationContext.errors[0]
-                            ? false
-                            : validationContext.valid
-                            ? true
-                            : null
-                        "
-                      />
-                      <b-form-invalid-feedback>{{
-                        validationContext.errors[0]
-                      }}</b-form-invalid-feedback>
-                    </b-form-group>
-                  </validation-provider>
-                  <validation-provider
-                    v-slot="validationContext"
-                    name="Password"
-                    :rules="{ required: true }"
-                  >
-                    <b-form-group :label="`Password`">
-                      <b-form-input
-                        v-model="newUser.password"
-                        type="password"
+                        v-model="newProvider.email"
                         :state="
                           validationContext.errors[0]
                             ? false
@@ -108,12 +86,15 @@
                   </validation-provider>
                   <b-form-group :label="`Gender`">
                     <v-select
-                      v-model="newUser.gender"
+                      v-model="newProvider.gender"
                       :options="genderChoice"
                     />
                   </b-form-group>
+                  <b-form-group :label="`Avatar URL`">
+                    <b-form-input v-model="newProvider.avatar" />
+                  </b-form-group>
                   <b-form-group :label="`Full Name`">
-                    <b-form-input v-model="newUser.fullName" />
+                    <b-form-input v-model="newProvider.name" />
                   </b-form-group>
                   <b-form-group :label="`Birthday`">
                     <b-form-datepicker
@@ -123,26 +104,10 @@
                     ></b-form-datepicker>
                   </b-form-group>
                   <b-form-group :label="`Phone number`">
-                    <b-form-input v-model="newUser.phone" />
+                    <b-form-input v-model="newProvider.phone" />
                   </b-form-group>
-                  <b-form-group :label="`Role`">
-                    <b-form-select v-model="newUser.roleId" class="mb-3">
-                      <b-form-select-option
-                        v-for="(role, index) in stateRole.roles"
-                        :id="role.id"
-                        :key="index"
-                        :value="role.id"
-                        >{{ role.name }}</b-form-select-option
-                      >
-                    </b-form-select>
-                  </b-form-group>
-                  <b-form-group :label="`Status`">
-                    <b-form-radio-group
-                      v-model="newUser.status"
-                      stacked
-                      class="pt-2"
-                      :options="statuses"
-                    />
+                  <b-form-group :label="`Note`">
+                    <b-form-input v-model="newProvider.note" />
                   </b-form-group>
                   <div class="float-right ml-2">
                     <b-button type="submit" size="lg" variant="main-color">
@@ -151,7 +116,7 @@
                     <div class="float-left mr-2">
                       <b-button
                         size="lg"
-                        variant="main-color"
+                        variant="danger"
                         @click="hideModal('modalright')"
                       >
                         <span class="label">CANCEL</span>
@@ -183,7 +148,7 @@
                 <div
                   class="search-sm d-inline-block float-md-left mr-1 align-top"
                 >
-                  <input
+                  <b-input
                     v-model="s"
                     :placeholder="`Search`"
                     @input="search(s)"
@@ -192,12 +157,12 @@
               </div>
               <div class="float-md-right pt-1">
                 <span class="text-muted text-small mr-1 mb-2">
-                  {{ from }} - {{ to }} of {{ stateUsers.total }}</span
+                  {{ from }} - {{ to }} of {{ stateProviders.total }}</span
                 >
                 <b-dropdown
                   id="ddown2"
                   right
-                  :text="`${stateUsers.query.limit}`"
+                  :text="`${stateProviders.query.limit}`"
                   variant="outline-dark"
                   class="d-inline-block"
                   size="xs"
@@ -217,20 +182,19 @@
       </b-row>
 
       <template>
-        <b-row :key="componentKey">
+        <b-row>
           <b-col
-            v-for="(user, index) in stateUsers.users"
-            :id="user.id"
+            v-for="(provider, index) in stateProviders.providers"
+            :id="provider.id"
             :key="index"
             xs="12"
             class="mb-4"
           >
-            <DataListUsers
-              :key="user.id"
+            <DataListProviders
+              :key="provider.id"
               v-contextmenu:contextmenu
-              :data="user"
-              :selected-user="stateUsers.selectedUser"
-              :roles="stateRole.roles"
+              :data="provider"
+              :selected-provider="stateProviders.selectedProvider"
               :fetch="fetchData"
               @toggle-item="toggleItem"
             />
@@ -242,9 +206,9 @@
         </b-row>
       </template>
       <b-pagination-nav
-        v-model="stateUsers.query.page"
-        :number-of-pages="stateUsers.pageCount"
-        :per-page="stateUsers.query.limit"
+        v-model="stateProviders.query.page"
+        :number-of-pages="stateProviders.pageCount"
+        :per-page="stateProviders.query.limit"
         :link-gen="linkGen"
         align="center"
       >
@@ -281,7 +245,7 @@
 
 <script>
 import { Breadcrumb } from '@/components/common'
-import { DataListUsers } from '@/components/uncommon/Users'
+import { DataListProviders } from '@/components/uncommon/Providers'
 
 import { mapActions, mapMutations, mapState } from 'vuex'
 import moment from 'moment'
@@ -289,22 +253,21 @@ import moment from 'moment'
 export default {
   components: {
     Breadcrumb,
-    DataListUsers,
+    DataListProviders,
   },
   async fetch() {
-    this.setUserQuery(this.$route.query)
-    await this.fetchDataUsers()
-    await this.fetchDataRoles()
+    this.setProviderQuery(this.$route.query)
+    await this.fetchDataProviders()
   },
   data() {
     return {
       sort: {
-        column: 'fullName',
+        column: 'name',
         label: 'Name',
       },
       sortOptions: [
         {
-          column: 'fullName,ASC',
+          column: 'name,ASC',
           label: 'Name',
         },
         {
@@ -312,28 +275,23 @@ export default {
           label: 'Gender',
         },
         {
-          column: 'status,ASC',
-          label: 'Status',
+          column: 'birthday,ASC',
+          label: 'Birthday',
         },
       ],
       s: '',
       genderChoice: ['MALE', 'FEMALE'],
-      statuses: ['ACTIVE', 'PENDING', 'INACTIVE'],
       pageSizes: [5, 10, 15],
-      roleId: [],
-      roleName: [],
-      newUser: {
+      newProvider: {
         email: '',
-        password: '',
-        fullName: '',
+        name: '',
         birthday: '',
         gender: '',
         phone: '',
-        roleId: 0,
-        status: '',
+        avatar: '',
+        note: '',
       },
       moment,
-      componentKey: 0,
       value: '',
       processing: false,
     }
@@ -341,137 +299,153 @@ export default {
   layout: 'admin',
   computed: {
     ...mapState({
-      stateUsers: (state) => state.users,
-      stateRole: (state) => state.role,
+      stateProviders: (state) => state.providers,
     }),
     from() {
-      return this.stateUsers.query.limit * (this.stateUsers.query.page - 1) + 1
+      return (
+        this.stateProviders.query.limit * (this.stateProviders.query.page - 1) +
+        1
+      )
     },
     to() {
       if (
-        this.stateUsers.query.limit * (this.stateUsers.query.page - 1) +
-          this.stateUsers.query.limit >
-        this.stateUsers.total
+        this.stateProviders.query.limit * (this.stateProviders.query.page - 1) +
+          this.stateProviders.query.limit >
+        this.stateProviders.total
       ) {
-        return this.stateUsers.total
+        return this.stateProviders.total
       } else {
         return (
-          this.stateUsers.query.limit * (this.stateUsers.query.page - 1) +
-          this.stateUsers.query.limit
+          this.stateProviders.query.limit *
+            (this.stateProviders.query.page - 1) +
+          this.stateProviders.query.limit
         )
       }
     },
+    // currentPage: {
+    //   get() {
+    //     if (this.$route.query.page) return this.$route.query.page
+    //     else return 1
+    //   },
+    //   set(val) {
+    //     this.$router.push({ query: { page: val } })
+    //   },
+    // },
   },
   watch: {
     $route() {
       this.$fetch()
     },
+    // selected(val) {
+    //   if (val.length > 0) {
+    //     this.disabled = false
+    //   } else {
+    //     this.disabled = true
+    //   }
+    // },
   },
   mounted() {},
   methods: {
     ...mapActions([
-      'fetchDataUsers',
-      'fetchDataRoles',
-      'setDataUserSelected',
-      'addUser',
-      'deleteUser',
-      'editUser',
+      'fetchDataProviders',
+      'setDataProviderSelected',
+      'addProvider',
+      'deleteProvider',
+      'editProvider',
     ]),
     ...mapMutations({
-      setUserQuery: 'SET_USER_QUERY',
+      setProviderQuery: 'SET_PROVIDER_QUERY',
     }),
-    forceRerender() {
-      console.log('Re-rendering')
-      this.componentKey += 1
-    },
     async submitFormAdd() {
       try {
         this.processing = true
-        console.log('Add user clicked - Add User: ', this.newUser)
-        await this.addUser(this.newUser)
+        console.log('Add provider clicked - Add Provider: ', this.newProvider)
+        await this.addProvider(this.newProvider)
+        this.stateProviders.selectedProvider = []
         this.$fetch()
         this.hideModal('modalright')
         this.$notify({
           group: 'notify',
           type: 'success',
           title: 'Add status',
-          text: 'Add user successfully',
-          duration: 10000,
+          text: 'Add provider successfully',
+          duration: 5000,
           speed: 1000,
         })
-        this.newUser = {
+        this.newProvider = {
           email: '',
           password: '',
           fullName: '',
           birthday: '',
           gender: '',
           phone: '',
-          roleId: 0,
+          avatar: '',
           status: '',
         }
         this.value = ''
       } catch (e) {
-        console.log(e)
         this.$notify({
           group: 'error',
           type: 'error',
           title: 'Add error',
           text: e,
-          duration: 10000,
-          speed: 1000,
+          duration: 5000,
         })
       }
     },
     async onContextDelete() {
       try {
         this.processing = true
-        await this.deleteUser(this.stateUsers.selectedUser)
-        this.stateUsers.selectedUser = []
+        await this.deleteProvider(this.stateProviders.selectedProvider)
+        this.stateProviders.selectedProvider = []
         this.$fetch()
         this.$notify({
           group: 'notify',
           type: 'success',
           title: 'Delete status',
-          text: 'Delete users successfully',
-          duration: 10000,
-          speed: 1000,
+          text: 'Delete providers successfully',
         })
       } catch (e) {
         this.$notify({
-          group: 'error',
+          group: 'notify',
           type: 'error',
           title: 'Delete status',
           text: e,
-          duration: 10000,
-          speed: 1000,
         })
       } finally {
         this.processing = false
       }
     },
     selectAll(isToggle) {
-      const usersForToggle = this.stateUsers.users
-      if (this.stateUsers.selectedUser.length >= this.stateUsers.users.length) {
+      const providersForToggle = this.stateProviders.providers
+      if (
+        this.stateProviders.selectedProvider.length >=
+        this.stateProviders.providers.length
+      ) {
         if (isToggle)
-          this.stateUsers.selectedUser.splice(
+          this.stateProviders.selectedProvider.splice(
             0,
-            this.stateUsers.selectedUser.length
+            this.stateProviders.selectedProvider.length
           )
       } else {
-        this.stateUsers.selectedUser.push(
-          ...usersForToggle.map((user) => {
-            return user.id
+        this.stateProviders.selectedProvider.push(
+          ...providersForToggle.map((provider) => {
+            return provider.id
           })
         )
       }
     },
     isSelectedAll() {
-      return this.stateUsers.selectedUser.length >= this.stateUsers.users.length
+      return (
+        this.stateProviders.selectedProvider.length >=
+        this.stateProviders.providers.length
+      )
     },
     isAnyItemSelected() {
       return (
-        this.stateUsers.selectedUser.length > 0 &&
-        this.stateUsers.selectedUser.length < this.stateUsers.users.length
+        this.stateProviders.selectedProvider.length > 0 &&
+        this.stateProviders.selectedProvider.length <
+          this.stateProviders.providers.length
       )
     },
     keymap(event) {
@@ -480,9 +454,9 @@ export default {
           this.selectAll(false)
           break
         case 'undo':
-          this.stateUsers.selectedUser.splice(
+          this.stateProviders.selectedProvider.splice(
             0,
-            this.stateUsers.selectedUser.length
+            this.stateProviders.selectedProvider.length
           )
           break
       }
@@ -495,75 +469,76 @@ export default {
       }
       return -1
     },
-    toggleItem(event, userId) {
-      if (event.shiftKey && this.stateUsers.selectedUser.length > 0) {
-        let usersForToggle = this.stateUsers.users
-        const start = this.getIndex(userId, usersForToggle, 'id')
+    toggleItem(event, providerId) {
+      if (event.shiftKey && this.stateProviders.selectedProvider.length > 0) {
+        let providersForToggle = this.stateProviders.providers
+        const start = this.getIndex(providerId, providersForToggle, 'id')
         const end = this.getIndex(
-          this.stateUsers.selectedUser[this.stateUsers.selectedUser.length - 1],
-          usersForToggle,
+          this.stateProviders.selectedProvider[
+            this.stateProviders.selectedProvider.length - 1
+          ],
+          providersForToggle,
           'id'
         )
-        usersForToggle = usersForToggle.slice(
+        providersForToggle = providersForToggle.slice(
           Math.min(start, end),
           Math.max(start, end) + 1
         )
-        this.stateUsers.selectedUser.push(
-          ...usersForToggle.map((user) => {
-            return user.id
+        this.stateProviders.selectedProvider.push(
+          ...providersForToggle.map((provider) => {
+            return provider.id
           })
         )
-      } else if (this.stateUsers.selectedUser.includes(userId)) {
-        this.stateUsers.selectedUser.splice(
-          this.stateUsers.selectedUser.indexOf(userId),
+      } else if (this.stateProviders.selectedProvider.includes(providerId)) {
+        this.stateProviders.selectedProvider.splice(
+          this.stateProviders.selectedProvider.indexOf(providerId),
           1
         )
-      } else this.stateUsers.selectedUser.push(userId)
+      } else this.stateProviders.selectedProvider.push(providerId)
     },
     handleContextmenu(vnode) {
-      if (!this.stateUsers.selectedUser.includes(vnode.key)) {
-        this.stateUsers.selectedUser.splice(
+      if (!this.stateProviders.selectedProvider.includes(vnode.key)) {
+        this.stateProviders.selectedProvider.splice(
           0,
-          this.stateUsers.selectedUser.length
+          this.stateProviders.selectedProvider.length
         )
-        this.stateUsers.selectedUser.push(vnode.key)
+        this.stateProviders.selectedProvider.push(vnode.key)
       }
     },
     onContextCopy() {
       console.log(
         'context menu item clicked - Copy Items: ',
-        this.stateUsers.selectedUser
+        this.stateProviders.selectedProvider
       )
     },
     onContextArchive() {
       console.log(
         'context menu item clicked - Move to Archive Items: ',
-        this.stateUsers.selectedUser
+        this.stateProviders.selectedProvider
       )
     },
     async fetchData() {
-      this.setUserQuery(this.$route.query)
-      await this.fetchDataUsers()
-      await this.fetchDataRoles()
+      this.setProviderQuery(this.$route.query)
+      await this.fetchDataProviders()
     },
     hideModal(refname) {
       this.$refs[refname].hide()
     },
     onContext(ctx) {
-      this.newUser.birthday = moment(ctx.selectedYMD, moment.ISO_8601)
+      this.newProvider.birthday = moment(ctx.selectedYMD, moment.ISO_8601)
     },
     changeOrderBy(sort) {
       this.sort = sort
-      this.stateUsers.query.sort = sort.column
+      this.stateProviders.query.sort = sort.column
       this.$fetch()
     },
     async search(s) {
-      this.stateUsers.query.s = '{"fullName":{"$cont": "' + s + '"}}'
-      await this.fetchDataUsers()
+      this.stateProviders.query.s = '{"name":{"$cont": "' + s + '"}}'
+      await this.fetchDataProviders()
     },
     changePageSize(perPage) {
       this.perPage = perPage
-      this.stateUsers.query.limit = perPage
+      this.stateProviders.query.limit = perPage
       this.$fetch()
     },
     linkGen(pageNum) {

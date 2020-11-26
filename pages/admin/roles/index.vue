@@ -4,7 +4,7 @@
       <breadcrumb heading="Roles"></breadcrumb>
     </div>
     <div>
-      <b-card class="mb-4" title="Manage Role">
+      <b-card class="mb-4" title="Manage Roles">
         <div class="float-right mb-4">
           <b-button
             v-if="

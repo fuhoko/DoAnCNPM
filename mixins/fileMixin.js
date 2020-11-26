@@ -53,21 +53,26 @@ export default {
           folderPrefix,
         }
       })
+      console.log(files)
       const response = await this.$axios.post(
-        '/v1/medias/presigned-url',
+        '/v1/medias/presigned-url/bulk',
         files,
         {
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         }
       )
-      return response.data.data.url
+      return response.data.data
     },
     // Has to have .raw (Element UI uploader's format)
     async uploadFilesToS3(files, folderPrefix) {
       const urls = await this.getSignedUrlsS3(files, folderPrefix)
+      console.log('a', urls)
       const responseUrls = await Promise.all(
-        urls.map(async (url, index) => {
-          const response = await this.$axios.put(url, files[index])
+        urls.map(async (item, index) => {
+          const response = await this.$axios.put(
+            item.presignedUrl,
+            files[index]
+          )
           if (response.status === 200) {
             const questionIndex = response.config.url.indexOf('?')
             const responseUrl = response.config.url.substring(0, questionIndex)

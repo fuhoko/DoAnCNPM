@@ -30,6 +30,18 @@ export default {
           hiddenOnCollapse: true,
         },
         {
+          href: '/admin/customers',
+          exactPath: true,
+          title: 'Customers',
+          icon: {
+            element: 'b-icon',
+            attributes: {
+              scale: '0.8',
+              icon: 'collection',
+            },
+          },
+        },
+        {
           href: '/admin/roles',
           title: 'Roles',
           icon: {
@@ -101,6 +113,21 @@ export default {
           },
           hidden: !this.$store.state.auth.currentUser.role.permissions.some(
             (item) => item.name === 'DESTINATION_READ' || item.name === 'ALL'
+          ),
+        },
+        {
+          href: '/admin/services',
+          exactPath: true,
+          title: 'Services',
+          icon: {
+            element: 'b-icon',
+            attributes: {
+              scale: '0.8',
+              icon: 'grid',
+            },
+          },
+          hidden: !this.$store.state.auth.currentUser.role.permissions.some(
+            (item) => item.name === 'SERVICES_READ' || item.name === 'ALL'
           ),
         },
       ],

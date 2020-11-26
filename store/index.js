@@ -7,6 +7,8 @@ import permission from './modules/permission.js'
 import destination from './modules/destination.js'
 import location from './modules/location.js'
 import category from './modules/category.js'
+import customer from './modules/customer.js'
+import service from './modules/service'
 
 const store = () => {
 	return new Vuex.Store({
@@ -18,6 +20,8 @@ const store = () => {
 			destination,
 			location,
 			category,
+			customer,
+			service
 		},
 	})
 }

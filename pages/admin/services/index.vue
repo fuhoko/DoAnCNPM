@@ -4,15 +4,15 @@
       <breadcrumb heading="Destinations"></breadcrumb>
     </div>
     <div>
-      <b-card title="Manage Destinations">
+      <b-card title="Manage Services">
         <div class="mb-6 d-flex align-items-center">
-          <div class="search-sm d-inline-block">
+          <!-- <div class="search-sm d-inline-block">
             <b-input
               v-model="searchKeyword"
               placeholder="Search"
               @keyup.enter="search"
             />
-          </div>
+          </div> -->
           <div class="ml-auto">
             <b-button
               v-b-modal.modal-create
@@ -57,7 +57,7 @@
           head-variant="light"
           responsive
           :busy="$fetchState.pending"
-          :items="stateDestination.destinations"
+          :items="stateService.services"
           :fields="fields"
           primary-key="id"
         >
@@ -91,19 +91,53 @@
                   </b-form-radio-group>
                 </b-col>
               </b-row>
+              <b-row class="justify-content-md-center">
+                <b-col sm="10">
+                  <b-carousel
+                    v-model="slide"
+                    :interval="4000"
+                    class="my-5"
+                    controls
+                    indicators
+                    @sliding-start="onSlideStart"
+                    @sliding-end="onSlideEnd"
+                  >
+                    <b-carousel-slide
+                      v-for="(el, index) in item.gallery"
+                      :key="index"
+                      :img-src="el"
+                    >
+                    </b-carousel-slide>
+                  </b-carousel>
+                </b-col>
+              </b-row>
               <b-row class="mb-2">
-                <b-col sm="2" class="text-sm-right"><b>Name:</b></b-col>
+                <b-col sm="2" class="text-sm-right"><b>Title:</b></b-col>
                 <b-col>{{
-                  item.selected == 'En' ? item.enName : item.viName
+                  item.selected == 'En' ? item.enTitle : item.viTitle
                 }}</b-col>
               </b-row>
               <b-row class="mb-2">
-                <b-col sm="2" class="text-sm-right"><b>Address:</b></b-col>
-                <b-col>{{ item.address }}</b-col>
+                <b-col sm="2" class="text-sm-right"><b>Owner:</b></b-col>
+                <b-col>{{ item.user.fullName }}</b-col>
               </b-row>
               <b-row class="mb-2">
-                <b-col sm="2" class="text-sm-right"><b>Owner:</b></b-col>
-                <b-col>{{ item.userId }}</b-col>
+                <b-col sm="2" class="text-sm-right"
+                  ><b>Current Price:</b></b-col
+                >
+                <b-col>{{ item.currentPrice }} / {{ item.unit }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"><b>Net Price:</b></b-col>
+                <b-col>{{ item.netPrice }} / {{ item.unit }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"><b>Price:</b></b-col>
+                <b-col>{{ item.price }} / {{ item.unit }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"><b>Note:</b></b-col>
+                <b-col>{{ item.note }}</b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="2" class="text-sm-right"><b>Content:</b></b-col>
@@ -173,8 +207,8 @@
           v-model="currentPage"
           size="sm"
           align="center"
-          :total-rows="stateDestination.total"
-          :per-page="stateDestination.query.limit"
+          :total-rows="stateService.total"
+          :per-page="stateService.query.limit"
         >
           <template v-slot:next-text>
             <b-icon icon="chevron-right" />
@@ -192,77 +226,68 @@
       </b-card>
     </div>
     <div>
-      <b-modal ref="modal-map" hide-footer size="xl">
-        <google-map
-          :lat="location.latitude"
-          :lng="location.longitude"
-        ></google-map>
-      </b-modal>
-    </div>
-    <div>
       <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
-        <multi-step-edit-destination
+        <multi-step-edit-service
           :processing="processing"
+          :destinations="stateDestination.destinations"
+          :categories="stateCategory.categories"
           @onSubmit="onCreate"
-        ></multi-step-edit-destination>
+        ></multi-step-edit-service>
       </b-modal>
-      <b-modal ref="modal-update" hide-footer size="lg">
+      <!-- <b-modal ref="modal-update" hide-footer size="lg">
         <multi-step-edit-destination
           :processing="processing"
-          :destination="stateDestination.destinationSelected"
+          :destination="stateService.destinationSelected"
           @onSubmit="onUpdate"
         ></multi-step-edit-destination>
-      </b-modal>
+      </b-modal> -->
     </div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import { mapActions, mapMutations, mapState } from 'vuex'
-import { GoogleMap } from '@/components/common'
-import { MultiStepEditDestination } from '@/components/uncommon'
+import { mapActions, mapState } from 'vuex'
 import { fileMixin } from '@/mixins'
+import { MultiStepEditService } from '@/components/uncommon'
 export default {
   layout: 'admin',
   middleware: 'authenticated',
   components: {
-    GoogleMap,
-    MultiStepEditDestination,
+    MultiStepEditService,
   },
   mixins: [fileMixin],
-  async fetch() {
-    try {
-      this.setDestinationQuery(this.$route.query)
-      await this.fetchDataDestinations()
-    } catch (e) {
+  fetch() {
+    Promise.all([
+      this.fetchDataServices(),
+      this.fetchDataCategories(),
+      this.fetchDataDestinations(),
+    ]).catch((e) => {
       this.$toast.error(e)
-    }
+    })
   },
   data() {
     return {
-      processing: false,
       disabled: true,
-      location: {
-        latitude: '',
-        longitude: '',
-      },
+      processing: false,
       fields: [
         'select',
         { key: 'id', label: 'Index' },
         'details',
-        'location',
         'createdAt',
         'updatedAt',
         'action',
       ],
       searchKeyword: '',
       selected: [],
+      slide: 0,
     }
   },
   computed: {
     ...mapState({
+      stateService: (state) => state.service,
       stateDestination: (state) => state.destination,
+      stateCategory: (state) => state.category,
     }),
     currentPage: {
       get() {
@@ -274,105 +299,33 @@ export default {
       },
     },
   },
-  watch: {
-    $route() {
-      this.$fetch()
-    },
-    selected(val) {
-      if (val.length > 0) {
-        this.disabled = false
-      } else {
-        this.disabled = true
-      }
-    },
-  },
-  created() {
-    this.searchKeyword = this.$route.query.s
-  },
   methods: {
     ...mapActions([
+      'fetchDataServices',
+      'fetchDataCategories',
       'fetchDataDestinations',
-      'getDataDestinationSelected',
-      'createDestination',
-      'updateDestination',
-      'deleteDestination',
+      'createService',
     ]),
-    ...mapMutations({
-      setDestinationQuery: 'SET_DESTINATION_QUERY',
-    }),
     changeDetailsLanguage(item) {
       if (!item._showDetails) {
         Vue.set(item, 'selected', 'En')
       }
       Vue.set(item, '_showDetails', !item._showDetails)
     },
-
-    showLocationOnMap(latitude, longitude) {
-      this.location.latitude = latitude
-      this.location.longitude = longitude
-      this.$refs['modal-map'].show()
+    onSlideStart(slide) {
+      this.sliding = true
     },
-
-    search() {
-      this.$router.push({ query: { s: this.searchKeyword } })
+    onSlideEnd(slide) {
+      this.sliding = false
     },
-
-    async onCreate(file, form) {
+    async onCreate(thumbnail, form, gallery) {
       try {
         this.processing = true
-        form.thumbnail = await this.uploadFileToS3(file, 'Thumbnail')
-        await this.createDestination(form)
-        this.$refs['modal-create'].hide()
-        this.$fetch()
-        this.$toast.success('Create successful')
+        form.thumbnail = await this.uploadFileToS3(thumbnail, 'Thumbnail')
+        form.gallery = await this.uploadFilesToS3(gallery, 'Gallery')
+        this.createService(form)
       } catch (e) {
         this.$toast.error(e)
-      } finally {
-        this.processing = false
-      }
-    },
-
-    toggleSelection(idItem, checked) {
-      if (checked) {
-        this.selected.push(idItem)
-      } else {
-        this.selected = this.selected.filter((item) => item !== idItem)
-      }
-    },
-
-    async onDelete() {
-      try {
-        await Promise.all(
-          this.selected.map((id) => {
-            this.deleteDestination(id)
-          })
-        )
-        this.$fetch()
-        this.$toast.success('Delete successful')
-      } catch (e) {
-        this.$toast.error(e)
-      }
-    },
-
-    fillFormEditDestination(id) {
-      this.getDataDestinationSelected(id)
-      this.$refs['modal-update'].show()
-    },
-
-    async onUpdate(file, form) {
-      try {
-        this.processing = true
-        if (file) {
-          this.$fileApi.put(form.thumbnail, file)
-        }
-        await this.updateDestination(form)
-        this.$refs['modal-update'].hide()
-        this.$fetch()
-        this.$toast.success('Update successful')
-      } catch (e) {
-        this.$toast.error(e)
-      } finally {
-        this.processing = false
       }
     },
   },

@@ -53,7 +53,6 @@ export default {
           folderPrefix,
         }
       })
-      console.log(files)
       const response = await this.$axios.post(
         '/v1/medias/presigned-url/bulk',
         files,
@@ -66,7 +65,6 @@ export default {
     // Has to have .raw (Element UI uploader's format)
     async uploadFilesToS3(files, folderPrefix) {
       const urls = await this.getSignedUrlsS3(files, folderPrefix)
-      console.log('a', urls)
       const responseUrls = await Promise.all(
         urls.map(async (item, index) => {
           const response = await this.$axios.put(

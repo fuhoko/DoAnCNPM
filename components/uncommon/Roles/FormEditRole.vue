@@ -138,6 +138,9 @@ export default {
       this.form.permissionIds = this.selectedAll ? [1] : this.selected
     },
   },
+  created() {
+    console.log(this.permissions)
+  },
   methods: {
     toggleAll(checked) {
       this.selected = checked

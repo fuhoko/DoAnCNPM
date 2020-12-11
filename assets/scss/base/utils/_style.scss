@@ -4659,23 +4659,14 @@ input:-webkit-autofill {
     border-radius: $border-radius;
 }
 
-.custom-select {
-    border-radius: $border-radius;
-    padding: 0.75rem 0.75rem 0.5rem 0.75rem;
-}
-
 .input-group>.form-control:not(:first-child),
 .input-group>.custom-select:not(:first-child) {
     outline: initial !important;
     box-shadow: initial !important;
 }
 
-.custom-select {
-    height: calc(2.5rem + 2px);
-}
-
 .custom-select:focus {
-    border-color: $theme-color-1;
+    border-color: $main-color;
 }
 
 .custom-file-input:focus~.custom-file-label {

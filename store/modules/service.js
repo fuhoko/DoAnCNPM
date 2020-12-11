@@ -5,8 +5,10 @@ export default {
       page: 0,
       limit: 10,
       s: null,
+      sort: null,
     },
     total: 0,
+    serviceSelected: null,
   },
 
   mutations: {
@@ -15,6 +17,20 @@ export default {
     },
     SET_SERVICE_TOTAL(state, payload) {
       state.total = payload
+    },
+    SET_SERVICE_QUERY(state, query) {
+      state.query = { ...state.query, ...{ limit: 10, page: query.page } }
+      if (query.s && query.q) {
+        state.query.s = `{"$or":[{"${query.s}":{"$contL":"${query.q}"}}]}`
+      } else {
+        state.query.s = null
+      }
+      if (query.sort) {
+        state.query.sort = query.sort
+      }
+    },
+    SET_SERVICE_SELECTED(state, payload) {
+      state.serviceSelected = payload
     },
   },
 
@@ -32,15 +48,30 @@ export default {
       }
     },
 
+    getDataServiceSelected({ commit, state }, payload) {
+      const newData = state.services.map((item) => ({ ...item }))
+      const target = newData.filter((item) => payload === item.id)[0]
+      commit('SET_SERVICE_SELECTED', target)
+    },
+
     async createService(context, payload) {
-      await console.log(payload)
-      // try {
-      //   await this.$axios.post('/v1/services', payload, {
-      //     headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
-      //   })
-      // } catch (e) {
-      //   throw e.response.data.message[0].description
-      // }
+      try {
+        await this.$axios.post('/v1/services', payload, {
+          headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
+        })
+      } catch (e) {
+        throw e.response.data.message[0].description
+      }
+    },
+
+    async deleteService(context, payload) {
+      try {
+        await this.$axios.delete(`/v1/services/${payload}`, {
+          headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
+        })
+      } catch (e) {
+        throw e.response.data.message[0].description
+      }
     },
   },
 }

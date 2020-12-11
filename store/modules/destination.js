@@ -5,6 +5,7 @@ export default {
       page: 0,
       limit: 10,
       s: null,
+      sort: null,
     },
     total: 0,
     destinationSelected: null,
@@ -19,10 +20,13 @@ export default {
     },
     SET_DESTINATION_QUERY(state, query) {
       state.query = { ...state.query, ...{ limit: 10, page: query.page } }
-      if (query.s) {
-        state.query.s = `{"$or":[{"enName":{"$contL":"${query.s}"}},{"viName":{"$contL":"${query.s}"}},{"enDescription":{"$contL": "${query.s}"}},{"viDescription":{"$contL": "${query.s}"}},{"enContent": {"$contL": "${query.s}"}},{"viContent": {"$contL": "${query.s}"}}]}`
+      if (query.s && query.q) {
+        state.query.s = `{"$or":[{"${query.s}":{"$contL":"${query.q}"}}]}`
       } else {
         state.query.s = null
+      }
+      if (query.sort) {
+        state.query.sort = query.sort
       }
     },
     SET_DESTINATION_SELECTED(state, payload) {

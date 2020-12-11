@@ -6,13 +6,31 @@
     <div>
       <b-card title="Manage Destinations">
         <div class="mb-6 d-flex align-items-center">
-          <div class="search-sm d-inline-block">
-            <b-input
-              v-model="searchKeyword"
-              placeholder="Search"
-              @keyup.enter="search"
-            />
-          </div>
+          <b-row class="w-50">
+            <b-col cols="5">
+              <b-input-group class="mb-3" size="sm">
+                <b-input-group-prepend class="w-40">
+                  <b-form-select
+                    v-model="selectedFieldSearch"
+                    size="sm"
+                    class="shadow-none rounded-pill select-search"
+                  >
+                    <option value="viName">Vi Name</option>
+                    <option value="enName">En Name</option>
+                    <option value="address">Address</option>
+                    <option value="enSlug">En Slug</option>
+                    <option value="viSlug">Vi Slug</option>
+                  </b-form-select>
+                </b-input-group-prepend>
+                <b-form-input
+                  v-model="searchKeyword"
+                  class="rounded-pill input-search"
+                  placeholder="Search"
+                  @keyup.enter="search"
+                />
+              </b-input-group>
+            </b-col>
+          </b-row>
           <div class="ml-auto">
             <b-button
               v-b-modal.modal-create
@@ -53,6 +71,13 @@
             </b-button>
           </div>
         </div>
+        <div class="mb-6 d-flex align-items-center">
+          <b class="mr-2">Language:</b>
+          <b-form-radio-group v-model="language">
+            <b-form-radio value="En">English</b-form-radio>
+            <b-form-radio value="Vi">Vietnamese</b-form-radio>
+          </b-form-radio-group>
+        </div>
         <b-table
           head-variant="light"
           responsive
@@ -60,6 +85,7 @@
           :items="stateDestination.destinations"
           :fields="fields"
           primary-key="id"
+          @sort-changed="sortingChanged"
         >
           <template v-slot:cell(select)="{ item }">
             <b-form-checkbox
@@ -70,6 +96,9 @@
                 }
               "
             />
+          </template>
+          <template v-slot:cell(name)="{ item }">
+            {{ language == 'En' ? item.enName : item.viName }}
           </template>
           <template v-slot:cell(details)="{ item, detailsShowing }">
             <b-button
@@ -83,21 +112,6 @@
           <template v-slot:row-details="{ item }">
             <b-card>
               <b-row class="mb-2">
-                <b-col sm="2" class="text-sm-right"><b>Language:</b></b-col>
-                <b-col>
-                  <b-form-radio-group v-model="item.selected">
-                    <b-form-radio value="En">English</b-form-radio>
-                    <b-form-radio value="Vi">Vietnamese</b-form-radio>
-                  </b-form-radio-group>
-                </b-col>
-              </b-row>
-              <b-row class="mb-2">
-                <b-col sm="2" class="text-sm-right"><b>Name:</b></b-col>
-                <b-col>{{
-                  item.selected == 'En' ? item.enName : item.viName
-                }}</b-col>
-              </b-row>
-              <b-row class="mb-2">
                 <b-col sm="2" class="text-sm-right"><b>Address:</b></b-col>
                 <b-col>{{ item.address }}</b-col>
               </b-row>
@@ -110,7 +124,7 @@
                 <b-col
                   ><span
                     v-html="
-                      item.selected == 'En'
+                      language == 'En'
                         ? $options.filters.sanitize(item.enContent)
                         : $options.filters.sanitize(item.viContent)
                     "
@@ -120,15 +134,13 @@
               <b-row class="mb-2">
                 <b-col sm="2" class="text-sm-right"><b>Description:</b></b-col>
                 <b-col>{{
-                  item.selected == 'En'
-                    ? item.enDescription
-                    : item.viDescription
+                  language == 'En' ? item.enDescription : item.viDescription
                 }}</b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="2" class="text-sm-right"><b>Slug:</b></b-col>
                 <b-col>{{
-                  item.selected == 'En' ? item.enSlug : item.viSlug
+                  language == 'En' ? item.enSlug : item.viSlug
                 }}</b-col>
               </b-row>
               <b-row class="mb-2">
@@ -243,20 +255,23 @@ export default {
     return {
       processing: false,
       disabled: true,
+      language: 'En',
       location: {
         latitude: '',
         longitude: '',
       },
       fields: [
         'select',
-        { key: 'id', label: 'Index' },
+        { key: 'id', label: 'Index', sortable: true },
+        { key: 'name', sortable: true },
         'details',
         'location',
-        'createdAt',
-        'updatedAt',
+        { key: 'createdAt', sortable: true },
+        { key: 'updatedAt', sortable: true },
         'action',
       ],
-      searchKeyword: '',
+      searchKeyword: this.$route.query.q ? this.$route.query.q : '',
+      selectedFieldSearch: this.$route.query.s ? this.$route.query.s : 'viName',
       selected: [],
     }
   },
@@ -270,7 +285,19 @@ export default {
         else return 1
       },
       set(val) {
-        this.$router.push({ query: { s: this.searchKeyword, page: val } })
+        if (this.$route.query.s && this.$route.query.q)
+          return this.$router.push({
+            query: Object.assign({}, this.$route.query, {
+              s: this.selectedFieldSearch,
+              q: this.searchKeyword,
+              page: val,
+            }),
+          })
+        return this.$router.push({
+          query: Object.assign({}, this.$route.query, {
+            page: val,
+          }),
+        })
       },
     },
   },
@@ -286,9 +313,6 @@ export default {
       }
     },
   },
-  created() {
-    this.searchKeyword = this.$route.query.s
-  },
   methods: {
     ...mapActions([
       'fetchDataDestinations',
@@ -301,9 +325,6 @@ export default {
       setDestinationQuery: 'SET_DESTINATION_QUERY',
     }),
     changeDetailsLanguage(item) {
-      if (!item._showDetails) {
-        Vue.set(item, 'selected', 'En')
-      }
       Vue.set(item, '_showDetails', !item._showDetails)
     },
 
@@ -314,7 +335,37 @@ export default {
     },
 
     search() {
-      this.$router.push({ query: { s: this.searchKeyword } })
+      this.$router.push({
+        query: { s: this.selectedFieldSearch, q: this.searchKeyword },
+      })
+    },
+
+    sortingChanged(ctx) {
+      let fieldSort = ''
+      if (['name'].includes(ctx.sortBy) && this.language === 'En') {
+        fieldSort = `en${
+          ctx.sortBy.charAt(0).toUpperCase() + ctx.sortBy.slice(1)
+        }`
+      } else if (['name'].includes(ctx.sortBy) && this.language === 'Vi') {
+        fieldSort = `vi${
+          ctx.sortBy.charAt(0).toUpperCase() + ctx.sortBy.slice(1)
+        }`
+      } else {
+        fieldSort = ctx.sortBy
+      }
+      if (ctx.sortDesc) {
+        this.$router.push({
+          query: Object.assign({}, this.$route.query, {
+            sort: `${fieldSort},DESC`,
+          }),
+        })
+      } else {
+        this.$router.push({
+          query: Object.assign({}, this.$route.query, {
+            sort: `${fieldSort},ASC`,
+          }),
+        })
+      }
     },
 
     async onCreate(file, form) {
@@ -340,13 +391,9 @@ export default {
       }
     },
 
-    async onDelete() {
+    onDelete() {
       try {
-        await Promise.all(
-          this.selected.map((id) => {
-            this.deleteDestination(id)
-          })
-        )
+        Promise.all(this.selected.map((id) => this.deleteDestination(id)))
         this.$fetch()
         this.$toast.success('Delete successful')
       } catch (e) {
@@ -378,3 +425,14 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.input-search {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.select-search {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+</style>

@@ -158,8 +158,10 @@
                           :rules="{ required: true }"
                         >
                           <b-form-input
-                            v-model.trim="form.price"
+                            v-model="form.price"
+                            :number="true"
                             :state="getValidationState(validationContext)"
+                            type="number"
                           />
                           <b-form-invalid-feedback>{{
                             validationContext.errors[0]
@@ -191,8 +193,10 @@
                           :rules="{ required: true }"
                         >
                           <b-form-input
-                            v-model.trim="form.currentPrice"
+                            v-model="form.currentPrice"
+                            :number="true"
                             :state="getValidationState(validationContext)"
+                            type="number"
                           />
                           <b-form-invalid-feedback>{{
                             validationContext.errors[0]
@@ -224,8 +228,10 @@
                           :rules="{ required: true }"
                         >
                           <b-form-input
-                            v-model.trim="form.netPrice"
+                            v-model="form.netPrice"
+                            :number="true"
                             :state="getValidationState(validationContext)"
+                            type="number"
                           />
                           <b-form-invalid-feedback>{{
                             validationContext.errors[0]
@@ -254,7 +260,7 @@
                 </b-form-group>
                 <label>Categories</label>
                 <treeselect
-                  v-model="form.serviceCategories"
+                  v-model="form.serviceCategoryIds"
                   :multiple="true"
                   :options="categories"
                   :normalizer="formatCategories"
@@ -264,10 +270,24 @@
                 />
                 <label>Destinations</label>
                 <treeselect
-                  v-model="form.destinations"
+                  v-model="form.destinationIds"
                   :multiple="true"
-                  :options="destinations"
+                  :async="true"
+                  :default-options="serviceDestinations"
+                  :load-options="loadDestinationOptions"
                   :normalizer="formatDestinations"
+                  :flat="true"
+                  :required="true"
+                  class="mb-7"
+                />
+                <label>Providers</label>
+                <treeselect
+                  v-model="form.providerIds"
+                  :multiple="true"
+                  :default-options="serviceProviders"
+                  :async="true"
+                  :load-options="loadProviderOptions"
+                  :normalizer="formatProviders"
                   :flat="true"
                   :required="true"
                   class="mb-7"
@@ -343,7 +363,7 @@
 </template>
 
 <script>
-import Treeselect from '@riophae/vue-treeselect'
+import Treeselect, { ASYNC_SEARCH } from '@riophae/vue-treeselect'
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { Tab, FormWizard } from '@/components/common'
@@ -366,6 +386,10 @@ export default {
       type: Array,
       default: null,
     },
+    providers: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {
@@ -380,28 +404,48 @@ export default {
         return {
           id: node.id,
           label: node.viName,
-          children: node.children,
+        }
+      },
+      formatProviders(node) {
+        return {
+          id: node.id,
+          label: node.email,
         }
       },
       imageUrl: this.service?.thumbnail ?? '',
       file: null,
       gallery: [],
-      previewGallery: this.service?.previewGallery ?? [],
+      previewGallery: this.service?.gallery ?? [],
       form: {
-        enTitle: this.service?.enName ?? '',
+        enTitle: this.service?.enTitle ?? '',
         enDescription: this.service?.enDescription ?? '',
         enContent: this.service?.enContent ?? '',
-        viTitle: this.service?.viName ?? '',
+        viTitle: this.service?.viTitle ?? '',
         viDescription: this.service?.viDescription ?? '',
         viContent: this.service?.viContent ?? '',
         thumbnail: this.service?.thumbnail ?? '',
-        currentPrice: this.service?.currentPrice ?? '',
-        netPrice: this.service?.netPrice ?? '',
-        price: this.service?.price ?? '',
+        currentPrice: this.service?.currentPrice ?? 0,
+        netPrice: this.service?.netPrice ?? 0,
+        price: this.service?.price ?? 0,
+        serviceCategoryIds:
+          this.service?.serviceCategories.map((item) => item.id) ?? [],
+        destinationIds: this.service?.destinations.map((item) => item.id) ?? [],
+        providerIds: this.service?.providers.map((item) => item.id) ?? [],
         unit: this.service?.unit ?? '',
         note: this.service?.note ?? '',
       },
     }
+  },
+  computed: {
+    serviceDestinations() {
+      return this.service?.destinations ?? []
+    },
+    serviceProviders() {
+      return this.service?.providers ?? []
+    },
+  },
+  created() {
+    console.log(this.service)
   },
   methods: {
     getValidationState({ dirty, validated, valid = null }) {
@@ -428,6 +472,23 @@ export default {
         })
       })
     },
+
+    async loadDestinationOptions({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        await this.$emit('loadDestinationOptions', searchQuery)
+        const options = this.destinations
+        callback(null, options)
+      }
+    },
+
+    async loadProviderOptions({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        await this.$emit('loadProviderOptions', searchQuery)
+        const options = this.providers
+        callback(null, options)
+      }
+    },
+
     onSlideStart(slide) {
       this.sliding = true
     },

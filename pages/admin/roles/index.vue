@@ -141,7 +141,14 @@ import { Breadcrumb } from '@/components/common'
 import { FormEditRole } from '@/components/uncommon'
 export default {
   layout: 'admin',
-  middleware: ['authenticated', 'isRoleManager'],
+  middleware: 'authorization',
+  permissions: [
+    'ROLE_READ',
+    'ROLE_REPLACE',
+    'ROLE_SOFT_DEL',
+    'ROLE_DELETE',
+    'ROLE_RESTORE',
+  ],
   components: {
     Breadcrumb,
     FormEditRole,

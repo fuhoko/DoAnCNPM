@@ -35,7 +35,7 @@ export default {
           icon: {
             element: 'b-icon',
             attributes: {
-              scale: '0.8',
+              scale: '0.6',
               icon: 'briefcase',
             },
           },
@@ -49,7 +49,7 @@ export default {
           icon: {
             element: 'b-icon',
             attributes: {
-              scale: '0.8',
+              scale: '0.6',
               icon: 'person',
             },
           },
@@ -63,7 +63,7 @@ export default {
           icon: {
             element: 'b-icon',
             attributes: {
-              scale: '0.8',
+              scale: '0.6',
               icon: 'people',
             },
           },
@@ -83,7 +83,7 @@ export default {
           icon: {
             element: 'b-icon',
             attributes: {
-              scale: '0.8',
+              scale: '0.6',
               icon: 'collection',
             },
           },
@@ -95,12 +95,27 @@ export default {
           icon: {
             element: 'b-icon',
             attributes: {
-              scale: '0.8',
+              scale: '0.6',
               icon: 'cursor',
             },
           },
           hidden: !this.$store.state.auth.currentUser.role.permissions.some(
             (item) => item.name === 'DESTINATION_READ' || item.name === 'ALL'
+          ),
+        },
+        {
+          href: '/admin/bills',
+          exactPath: true,
+          title: 'Bills',
+          icon: {
+            element: 'b-icon',
+            attributes: {
+              scale: '0.6',
+              icon: 'newspaper',
+            },
+          },
+          hidden: !this.$store.state.auth.currentUser.role.permissions.some(
+            (item) => item.name === 'BILL_READ' || item.name === 'ALL'
           ),
         },
       ],

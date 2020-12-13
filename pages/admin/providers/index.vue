@@ -256,8 +256,12 @@ export default {
     DataListProviders,
   },
   async fetch() {
-    this.setProviderQuery(this.$route.query)
-    await this.fetchDataProviders()
+    try {
+      this.setProviderQuery(this.$route.query)
+      await this.fetchDataProviders()
+    } catch (e) {
+      this.$toast.error(e)
+    }
   },
   data() {
     return {
@@ -364,14 +368,6 @@ export default {
         this.stateProviders.selectedProvider = []
         this.$fetch()
         this.hideModal('modalright')
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Add status',
-          text: 'Add provider successfully',
-          duration: 5000,
-          speed: 1000,
-        })
         this.newProvider = {
           email: '',
           password: '',
@@ -384,13 +380,7 @@ export default {
         }
         this.value = ''
       } catch (e) {
-        this.$notify({
-          group: 'error',
-          type: 'error',
-          title: 'Add error',
-          text: e,
-          duration: 5000,
-        })
+        this.$toast.error(e)
       }
     },
     async onContextDelete() {
@@ -399,19 +389,8 @@ export default {
         await this.deleteProvider(this.stateProviders.selectedProvider)
         this.stateProviders.selectedProvider = []
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Delete status',
-          text: 'Delete providers successfully',
-        })
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Delete status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }

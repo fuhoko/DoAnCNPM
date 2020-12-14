@@ -15,7 +15,6 @@ export default {
         const response = await this.$axios.get('/v1/service_categories/trees', {
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
-        console.log(response)
         commit('SET_CATEGORIES', response.data.data)
       } catch (e) {
         throw e.response.data.message[0].description

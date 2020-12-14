@@ -4,7 +4,7 @@
       <breadcrumb heading="Roles"></breadcrumb>
     </div>
     <div>
-      <b-card class="mb-4" title="Manage Role">
+      <b-card class="mb-4" title="Manage Roles">
         <div class="float-right mb-4">
           <b-button
             v-if="
@@ -141,7 +141,14 @@ import { Breadcrumb } from '@/components/common'
 import { FormEditRole } from '@/components/uncommon'
 export default {
   layout: 'admin',
-  middleware: ['authenticated', 'isRoleManager'],
+  middleware: 'authorization',
+  permissions: [
+    'ROLE_READ',
+    'ROLE_REPLACE',
+    'ROLE_SOFT_DEL',
+    'ROLE_DELETE',
+    'ROLE_RESTORE',
+  ],
   components: {
     Breadcrumb,
     FormEditRole,

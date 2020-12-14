@@ -1,10 +1,10 @@
 <template>
   <div>
     <div>
-      <breadcrumb heading="Destinations"></breadcrumb>
+      <breadcrumb heading="Services"></breadcrumb>
     </div>
     <div>
-      <b-card title="Manage Destinations">
+      <b-card title="Manage Services">
         <div class="mb-6 d-flex align-items-center">
           <b-row class="w-50">
             <b-col cols="5">
@@ -15,9 +15,8 @@
                     size="sm"
                     class="shadow-none rounded-pill select-search"
                   >
-                    <option value="viName">Vi Name</option>
-                    <option value="enName">En Name</option>
-                    <option value="address">Address</option>
+                    <option value="viTitle">Vi Title</option>
+                    <option value="enTitle">En Title</option>
                     <option value="enSlug">En Slug</option>
                     <option value="viSlug">Vi Slug</option>
                   </b-form-select>
@@ -82,7 +81,7 @@
           head-variant="light"
           responsive
           :busy="$fetchState.pending"
-          :items="stateDestination.destinations"
+          :items="stateService.services"
           :fields="fields"
           primary-key="id"
           @sort-changed="sortingChanged"
@@ -97,8 +96,8 @@
               "
             />
           </template>
-          <template v-slot:cell(name)="{ item }">
-            {{ language == 'En' ? item.enName : item.viName }}
+          <template v-slot:cell(title)="{ item }">
+            {{ language == 'En' ? item.enTitle : item.viTitle }}
           </template>
           <template v-slot:cell(details)="{ item, detailsShowing }">
             <b-button
@@ -111,13 +110,47 @@
           </template>
           <template v-slot:row-details="{ item }">
             <b-card>
-              <b-row class="mb-2">
-                <b-col sm="2" class="text-sm-right"><b>Address:</b></b-col>
-                <b-col>{{ item.address }}</b-col>
+              <b-row class="justify-content-md-center">
+                <b-col sm="10">
+                  <b-carousel
+                    v-model="slide"
+                    :interval="4000"
+                    class="my-5"
+                    controls
+                    indicators
+                    @sliding-start="onSlideStart"
+                    @sliding-end="onSlideEnd"
+                  >
+                    <b-carousel-slide
+                      v-for="(el, index) in item.gallery"
+                      :key="index"
+                      :img-src="el"
+                    >
+                    </b-carousel-slide>
+                  </b-carousel>
+                </b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="2" class="text-sm-right"><b>Owner:</b></b-col>
-                <b-col>{{ item.userId }}</b-col>
+                <b-col>{{ item.user.fullName }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"
+                  ><b>Current Price:</b></b-col
+                >
+                <b-col>{{ item.currentPrice }} / {{ item.unit }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"><b>Net Price:</b></b-col>
+                <b-col>{{ item.netPrice }} / {{ item.unit }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"><b>Price:</b></b-col>
+                <b-col>{{ item.price }} / {{ item.unit }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="2" class="text-sm-right"><b>Note:</b></b-col>
+                <b-col>{{ item.note }}</b-col>
               </b-row>
               <b-row class="mb-2">
                 <b-col sm="2" class="text-sm-right"><b>Content:</b></b-col>
@@ -175,7 +208,7 @@
             <b-button
               variant="outline-main-color"
               size="sm"
-              @click="fillFormEditDestination(item.id)"
+              @click="fillFormEditService(item.id)"
               >Edit</b-button
             >
           </template>
@@ -185,8 +218,8 @@
           v-model="currentPage"
           size="sm"
           align="center"
-          :total-rows="stateDestination.total"
-          :per-page="stateDestination.query.limit"
+          :total-rows="stateService.total"
+          :per-page="stateService.query.limit"
         >
           <template v-slot:next-text>
             <b-icon icon="chevron-right" />
@@ -204,26 +237,27 @@
       </b-card>
     </div>
     <div>
-      <b-modal ref="modal-map" hide-footer size="xl">
-        <google-map
-          :lat="location.latitude"
-          :lng="location.longitude"
-        ></google-map>
-      </b-modal>
-    </div>
-    <div>
       <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
-        <multi-step-edit-destination
+        <multi-step-edit-service
           :processing="processing"
+          :destinations="stateDestination.destinations"
+          :categories="stateCategory.categories"
+          :providers="stateProvider.providers"
+          @loadDestinationOptions="loadDestinationOptions"
+          @loadProviderOptions="loadProviderOptions"
           @onSubmit="onCreate"
-        ></multi-step-edit-destination>
+        ></multi-step-edit-service>
       </b-modal>
       <b-modal ref="modal-update" hide-footer size="lg">
-        <multi-step-edit-destination
+        <multi-step-edit-service
+          :service="stateService.serviceSelected"
           :processing="processing"
-          :destination="stateDestination.destinationSelected"
+          :destinations="stateDestination.destinations"
+          :categories="stateCategory.categories"
+          :providers="stateProvider.providers"
+          @loadDestinationOptions="loadDestinationOptions"
           @onSubmit="onUpdate"
-        ></multi-step-edit-destination>
+        ></multi-step-edit-service>
       </b-modal>
     </div>
   </div>
@@ -232,52 +266,54 @@
 <script>
 import Vue from 'vue'
 import { mapActions, mapMutations, mapState } from 'vuex'
-import { GoogleMap } from '@/components/common'
-import { MultiStepEditDestination } from '@/components/uncommon'
 import { fileMixin } from '@/mixins'
+import { MultiStepEditService } from '@/components/uncommon'
 export default {
   layout: 'admin',
   middleware: 'authenticated',
   components: {
-    GoogleMap,
-    MultiStepEditDestination,
+    MultiStepEditService,
   },
   mixins: [fileMixin],
   async fetch() {
-    try {
-      this.setDestinationQuery(this.$route.query)
-      await this.fetchDataDestinations()
-    } catch (e) {
+    this.setServiceQuery(this.$route.query)
+    await Promise.all([
+      this.fetchDataServices(),
+      this.fetchDataCategories(),
+      this.fetchDataDestinations(),
+      this.fetchDataProviders(),
+    ]).catch((e) => {
       this.$toast.error(e)
-    }
+    })
   },
   data() {
     return {
-      processing: false,
       disabled: true,
+      processing: false,
       language: 'En',
-      location: {
-        latitude: '',
-        longitude: '',
-      },
       fields: [
         'select',
         { key: 'id', label: 'Index', sortable: true },
-        { key: 'name', sortable: true },
+        { key: 'title', sortable: true },
         'details',
-        'location',
         { key: 'createdAt', sortable: true },
         { key: 'updatedAt', sortable: true },
         'action',
       ],
       searchKeyword: this.$route.query.q ? this.$route.query.q : '',
-      selectedFieldSearch: this.$route.query.s ? this.$route.query.s : 'viName',
+      selectedFieldSearch: this.$route.query.s
+        ? this.$route.query.s
+        : 'viTitle',
       selected: [],
+      slide: 0,
     }
   },
   computed: {
     ...mapState({
+      stateService: (state) => state.service,
       stateDestination: (state) => state.destination,
+      stateCategory: (state) => state.category,
+      stateProvider: (state) => state.providers,
     }),
     currentPage: {
       get() {
@@ -315,23 +351,40 @@ export default {
   },
   methods: {
     ...mapActions([
+      'fetchDataServices',
+      'fetchDataCategories',
       'fetchDataDestinations',
-      'getDataDestinationSelected',
-      'createDestination',
-      'updateDestination',
-      'deleteDestination',
+      'fetchDataProviders',
+      'createService',
+      'deleteService',
+      'getDataServiceSelected',
     ]),
     ...mapMutations({
+      setServiceQuery: 'SET_SERVICE_QUERY',
       setDestinationQuery: 'SET_DESTINATION_QUERY',
+      setProviderQuery: 'SET_PROVIDER_QUERY',
     }),
+
     changeDetailsLanguage(item) {
       Vue.set(item, '_showDetails', !item._showDetails)
     },
 
-    showLocationOnMap(latitude, longitude) {
-      this.location.latitude = latitude
-      this.location.longitude = longitude
-      this.$refs['modal-map'].show()
+    async loadDestinationOptions(query) {
+      this.setDestinationQuery({ s: query })
+      await this.fetchDataDestinations()
+    },
+
+    async loadProviderOptions(query) {
+      this.setProviderQuery({ s: query })
+      await this.fetchDataProviders()
+    },
+
+    onSlideStart(slide) {
+      this.sliding = true
+    },
+
+    onSlideEnd(slide) {
+      this.sliding = false
     },
 
     search() {
@@ -342,11 +395,11 @@ export default {
 
     sortingChanged(ctx) {
       let fieldSort = ''
-      if (['name'].includes(ctx.sortBy) && this.language === 'En') {
+      if (['title'].includes(ctx.sortBy) && this.language === 'En') {
         fieldSort = `en${
           ctx.sortBy.charAt(0).toUpperCase() + ctx.sortBy.slice(1)
         }`
-      } else if (['name'].includes(ctx.sortBy) && this.language === 'Vi') {
+      } else if (['title'].includes(ctx.sortBy) && this.language === 'Vi') {
         fieldSort = `vi${
           ctx.sortBy.charAt(0).toUpperCase() + ctx.sortBy.slice(1)
         }`
@@ -368,11 +421,12 @@ export default {
       }
     },
 
-    async onCreate(file, form) {
+    async onCreate(thumbnail, form, gallery) {
       try {
         this.processing = true
-        form.thumbnail = await this.uploadFileToS3(file, 'Thumbnail')
-        await this.createDestination(form)
+        form.thumbnail = await this.uploadFileToS3(thumbnail, 'Thumbnail')
+        form.gallery = await this.uploadFilesToS3(gallery, 'Gallery')
+        this.createService(form)
         this.$refs['modal-create'].hide()
         this.$fetch()
         this.$toast.success('Create successful')
@@ -393,7 +447,8 @@ export default {
 
     onDelete() {
       try {
-        Promise.all(this.selected.map((id) => this.deleteDestination(id)))
+        Promise.all(this.selected.map((id) => this.deleteService(id)))
+        this.selected = []
         this.$fetch()
         this.$toast.success('Delete successful')
       } catch (e) {
@@ -401,27 +456,12 @@ export default {
       }
     },
 
-    fillFormEditDestination(id) {
-      this.getDataDestinationSelected(id)
+    fillFormEditService(id) {
+      this.getDataServiceSelected(id)
       this.$refs['modal-update'].show()
     },
 
-    async onUpdate(file, form) {
-      try {
-        this.processing = true
-        if (file) {
-          this.$fileApi.put(form.thumbnail, file)
-        }
-        await this.updateDestination(form)
-        this.$refs['modal-update'].hide()
-        this.$fetch()
-        this.$toast.success('Update successful')
-      } catch (e) {
-        this.$toast.error(e)
-      } finally {
-        this.processing = false
-      }
-    },
+    onUpdate() {},
   },
 }
 </script>

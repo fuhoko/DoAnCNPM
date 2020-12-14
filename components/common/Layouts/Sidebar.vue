@@ -137,14 +137,14 @@ export default {
           icon: {
             element: 'b-icon',
             attributes: {
-              scale: '0.8',
+              scale: '0.6',
               icon: 'grid',
             },
           },
           hidden: !this.$store.state.auth.currentUser.role.permissions.some(
             (item) => item.name === 'SERVICES_READ' || item.name === 'ALL'
           ),
-        }
+        },
       ],
     }
   },

@@ -93,11 +93,23 @@
                   name="Service ID"
                   :rules="{ required: true }"
                 >
-                  <b-form-group label="Service ID" class="mb-7">
-                    <b-form-input
-                      v-model.trim="form.billServices[0].serviceId"
-                      :state="getValidationState(validationContext)"
-                    />
+                  <b-form-group label="Service" class="mb-7">
+                    <b-form-select
+                      v-model="form.billServices[0].serviceId"
+                      class="mb-3"
+                      :options="services"
+                      value-field="id"
+                      text-field="enTitle"
+                      @change="onChange"
+                    >
+                      <!-- <b-form-select-option
+                        v-for="(customer, index) in customers"
+                        :id="customer.id"
+                        :key="index"
+                        :value="customer.id"
+                        >{{ customer.fullName }}</b-form-select-option
+                      > -->
+                    </b-form-select>
                     <b-form-invalid-feedback>{{
                       validationContext.errors[0]
                     }}</b-form-invalid-feedback>
@@ -198,6 +210,10 @@ export default {
       default: null,
     },
     customers: {
+      type: Array,
+      default: null,
+    },
+    services: {
       type: Array,
       default: null,
     },

@@ -11,6 +11,7 @@ import category from './modules/category.js'
 import bill from './modules/bill.js'
 import customer from './modules/customer.js'
 import service from './modules/service'
+import billInfo from './modules/billInfo.js'
 
 const store = () => {
 	return new Vuex.Store({
@@ -25,7 +26,8 @@ const store = () => {
 			category,
 			bill,
 			customer,
-			service
+			service,
+			billInfo
 		},
 	})
 }

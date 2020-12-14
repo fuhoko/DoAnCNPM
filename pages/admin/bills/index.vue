@@ -141,6 +141,12 @@
               @click="fillFormEditBill(item.id)"
               >Edit</b-button
             >
+            <b-button
+              variant="outline-main-color"
+              size="sm"
+              @click="fillFormAddPayment(item.id)"
+              >Pay</b-button
+            >
           </template>
         </b-table>
         <b-pagination
@@ -171,6 +177,7 @@
         <FormEditBill
           :processing="processing"
           :customers="stateCustomer.customers"
+          :services="stateService.services"
           @onSubmit="onCreate"
         ></FormEditBill>
       </b-modal>
@@ -179,8 +186,28 @@
           :processing="processing"
           :bill="stateBill.selectedBill"
           :customers="stateCustomer.customers"
+          :services="stateService.services"
           @onSubmit="onUpdate"
         ></FormEditBill>
+      </b-modal>
+      <b-modal
+        ref="modal-add"
+        no-close-on-backdrop
+        no-close-on-esc
+        :title="`Add Payment`"
+        hide-footer
+        scrollable
+      >
+        <FormAddPayment
+          :processing="processing"
+          :bill="stateBill.selectedBill"
+          :customers="stateCustomer.customers"
+          :services="stateService.services"
+          no-close-on-backdrop
+          @hide-modal="hideModalAdd"
+          @submit-form-add="submitFormAdd"
+          @fetch="fetchDataCustomer"
+        ></FormAddPayment>
       </b-modal>
     </div>
   </div>
@@ -189,20 +216,24 @@
 <script>
 import Vue from 'vue'
 import { mapActions, mapMutations, mapState } from 'vuex'
-import { FormEditBill } from '@/components/uncommon'
+import { FormEditBill, FormAddPayment } from '@/components/uncommon'
 import { fileMixin } from '@/mixins'
 export default {
   layout: 'admin',
   middleware: 'authenticated',
   components: {
     FormEditBill,
+    FormAddPayment,
   },
   mixins: [fileMixin],
   async fetch() {
     try {
       this.setBillQuery(this.$route.query)
+      this.stateService.query.limit = 30
+      this.stateCustomer.query.limit = 30
       await this.fetchDataBills()
       await this.fetchDataCustomers()
+      await this.fetchDataServices()
     } catch (e) {
       this.$toast.error(e)
     }
@@ -226,7 +257,8 @@ export default {
   computed: {
     ...mapState({
       stateBill: (state) => state.bill,
-      stateCustomer: (state) => state.customers,
+      stateCustomer: (state) => state.customer,
+      stateService: (state) => state.service,
     }),
     currentPage: {
       get() {
@@ -257,14 +289,17 @@ export default {
     ...mapActions([
       'fetchDataBills',
       'fetchDataCustomers',
+      'fetchDataServices',
       'setDataBillSelected',
       'addBill',
       'editBill',
       'deleteBill',
+      'fetchDataCustomer',
     ]),
     ...mapMutations({
       setBillQuery: 'SET_BILL_QUERY',
       setCustomerQuery: 'SET_CUSTOMER_QUERY',
+      setServiceQuery: 'SET_SERVICE_QUERY',
     }),
     changeDetailsLanguage(item) {
       if (!item._showDetails) {
@@ -316,6 +351,10 @@ export default {
       this.setDataBillSelected(id)
       this.$refs['modal-update'].show()
     },
+    fillFormAddPayment(id) {
+      this.setDataBillSelected(id)
+      this.$refs['modal-add'].show()
+    },
 
     async onUpdate(file, form) {
       try {
@@ -329,6 +368,21 @@ export default {
       } finally {
         this.processing = false
       }
+    },
+    submitFormAdd(form) {
+      try {
+        this.processing = true
+        console.log('Add Bill Info clicked - Add Bill Info: ', form)
+        // await this.addBillInfo(form)
+        this.$fetch()
+        this.$refs['modal-add'].hide()
+        this.$toast.success('Create successful')
+      } catch (e) {
+        this.$toast.error(e)
+      }
+    },
+    hideModalAdd() {
+      this.$refs['modal-add'].hide()
     },
   },
 }

@@ -305,8 +305,8 @@ export default {
             this.deleteBill(id)
           })
         )
-        this.$fetch()
         this.$toast.success('Delete successful')
+        this.$fetch()
       } catch (e) {
         this.$toast.error(e)
       }

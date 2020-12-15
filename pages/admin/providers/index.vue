@@ -199,10 +199,6 @@
               @toggle-item="toggleItem"
             />
           </b-col>
-          <div>
-            <notifications group="notify" position="top center" />
-            <notifications group="error" position="top center" />
-          </div>
         </b-row>
       </template>
       <b-pagination-nav
@@ -378,9 +374,12 @@ export default {
           avatar: '',
           status: '',
         }
+        this.$toast.success('Add successful')
         this.value = ''
       } catch (e) {
         this.$toast.error(e)
+      } finally {
+        this.processing = false
       }
     },
     async onContextDelete() {
@@ -389,6 +388,7 @@ export default {
         await this.deleteProvider(this.stateProviders.selectedProvider)
         this.stateProviders.selectedProvider = []
         this.$fetch()
+        this.$toast.success('Delete successful')
       } catch (e) {
         this.$toast.error(e)
       } finally {

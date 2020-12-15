@@ -144,7 +144,13 @@
             <b-button
               variant="outline-main-color"
               size="sm"
-              @click="fillFormAddPayment(item.id)"
+              @click="
+                fillFormAddPayment(
+                  item.id,
+                  item.customer.id,
+                  item.billServices[0].serviceId
+                )
+              "
               >Pay</b-button
             >
           </template>
@@ -201,8 +207,8 @@
         <FormAddPayment
           :processing="processing"
           :bill="stateBill.selectedBill"
-          :customers="stateCustomer.customers"
-          :services="stateService.services"
+          :customer="stateCustomer.customer"
+          :provider="stateProvider.provider"
           no-close-on-backdrop
           @hide-modal="hideModalAdd"
           @submit-form-add="submitFormAdd"
@@ -229,11 +235,12 @@ export default {
   async fetch() {
     try {
       this.setBillQuery(this.$route.query)
-      this.stateService.query.limit = 30
-      this.stateCustomer.query.limit = 30
+      this.stateService.query.limit = this.stateService.total
+      this.stateCustomer.query.limit = this.stateCustomer.total
       await this.fetchDataBills()
       await this.fetchDataCustomers()
       await this.fetchDataServices()
+      await this.fetchDataProviders()
     } catch (e) {
       this.$toast.error(e)
     }
@@ -259,6 +266,7 @@ export default {
       stateBill: (state) => state.bill,
       stateCustomer: (state) => state.customer,
       stateService: (state) => state.service,
+      stateProvider: (state) => state.providers,
     }),
     currentPage: {
       get() {
@@ -295,11 +303,16 @@ export default {
       'editBill',
       'deleteBill',
       'fetchDataCustomer',
+      'addPayment',
+      'fetchDataService',
+      'fetchDataProviders',
+      'fetchDataProvider',
     ]),
     ...mapMutations({
       setBillQuery: 'SET_BILL_QUERY',
       setCustomerQuery: 'SET_CUSTOMER_QUERY',
       setServiceQuery: 'SET_SERVICE_QUERY',
+      setProviderQuery: 'SET_PROVIDER_QUERY',
     }),
     changeDetailsLanguage(item) {
       if (!item._showDetails) {
@@ -351,8 +364,11 @@ export default {
       this.setDataBillSelected(id)
       this.$refs['modal-update'].show()
     },
-    fillFormAddPayment(id) {
+    async fillFormAddPayment(id, customerId, serviceId) {
       this.setDataBillSelected(id)
+      await this.fetchDataCustomer(customerId)
+      await this.fetchDataService(serviceId)
+      await this.fetchDataProvider(this.stateService.service.providers[0].id)
       this.$refs['modal-add'].show()
     },
 
@@ -369,16 +385,18 @@ export default {
         this.processing = false
       }
     },
-    submitFormAdd(form) {
+    async submitFormAdd(form) {
       try {
         this.processing = true
-        console.log('Add Bill Info clicked - Add Bill Info: ', form)
-        // await this.addBillInfo(form)
+        console.log('Add Payment clicked - Add Payment: ', form)
+        await this.addPayment(form)
         this.$fetch()
         this.$refs['modal-add'].hide()
         this.$toast.success('Create successful')
       } catch (e) {
         this.$toast.error(e)
+      } finally {
+        this.processing = false
       }
     },
     hideModalAdd() {

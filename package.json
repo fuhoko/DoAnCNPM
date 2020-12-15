@@ -30,7 +30,6 @@
     "sanitize-html": "^2.0.0",
     "sass-loader": "^9.0.3",
     "slug": "^3.3.4",
-    "v-calendar": "^2.1.1",
     "v-contextmenu": "^2.9.0",
     "vee-validate": "^3.3.9",
     "vue-context-menu": "^2.0.6",

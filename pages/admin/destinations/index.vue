@@ -212,13 +212,19 @@
       </b-modal>
     </div>
     <div>
-      <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
+      <b-modal
+        id="modal-create"
+        ref="modal-create"
+        no-enforce-focus
+        hide-footer
+        size="lg"
+      >
         <multi-step-edit-destination
           :processing="processing"
           @onSubmit="onCreate"
         ></multi-step-edit-destination>
       </b-modal>
-      <b-modal ref="modal-update" hide-footer size="lg">
+      <b-modal ref="modal-update" no-enforce-focus hide-footer size="lg">
         <multi-step-edit-destination
           :processing="processing"
           :destination="stateDestination.destinationSelected"

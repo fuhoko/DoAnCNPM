@@ -72,21 +72,17 @@
                     }}</b-form-invalid-feedback>
                   </b-form-group>
                 </validation-provider>
-                <validation-provider
-                  v-slot="validationContext"
-                  name="Content"
-                  :rules="{ required: true }"
-                >
-                  <b-form-group label="Content" class="mb-7">
-                    <b-form-input
-                      v-model.trim="form.enContent"
+                <b-form-group label="Content" class="mb-7">
+                  <editor
+                    v-model="form.enContent"
+                    api-key="pyehxhli5mudohyd3tknd30z40s13zol8mcvt61tzcf9q2mp"
+                    :init="initTinymce"
+                  />
+                  <!-- <b-form-input
+                      v-model.trim="form.viDescription"
                       :state="getValidationState(validationContext)"
-                    />
-                    <b-form-invalid-feedback>{{
-                      validationContext.errors[0]
-                    }}</b-form-invalid-feedback>
-                  </b-form-group>
-                </validation-provider>
+                    /> -->
+                </b-form-group>
               </b-form>
             </validation-observer>
           </div>
@@ -112,7 +108,7 @@
                 </validation-provider>
                 <validation-provider
                   v-slot="validationContext"
-                  name="Description"
+                  name="Content"
                   :rules="{ required: true }"
                 >
                   <b-form-group label="Description" class="mb-7">
@@ -125,21 +121,17 @@
                     }}</b-form-invalid-feedback>
                   </b-form-group>
                 </validation-provider>
-                <validation-provider
-                  v-slot="validationContext"
-                  name="Content"
-                  :rules="{ required: true }"
-                >
-                  <b-form-group label="Content" class="mb-7">
-                    <b-form-input
-                      v-model.trim="form.viContent"
+                <b-form-group label="Content" class="mb-7">
+                  <editor
+                    v-model="form.viContent"
+                    api-key="pyehxhli5mudohyd3tknd30z40s13zol8mcvt61tzcf9q2mp"
+                    :init="initTinymce"
+                  />
+                  <!-- <b-form-input
+                      v-model.trim="form.viDescription"
                       :state="getValidationState(validationContext)"
-                    />
-                    <b-form-invalid-feedback>{{
-                      validationContext.errors[0]
-                    }}</b-form-invalid-feedback>
-                  </b-form-group>
-                </validation-provider>
+                    /> -->
+                </b-form-group>
               </b-form>
             </validation-observer>
           </div>
@@ -214,9 +206,11 @@
 
 <script>
 import { Tab, FormWizard, GoogleMap } from '@/components/common'
+import Editor from '@tinymce/tinymce-vue'
 
 export default {
   components: {
+    Editor,
     FormWizard,
     Tab,
     GoogleMap,
@@ -235,6 +229,14 @@ export default {
     return {
       imageUrl: this.destination?.thumbnail ?? '',
       file: null,
+      initTinymce: {
+        height: 400,
+        menubar: false,
+        toolbar: `undo redo | formatselect | bold italic backcolor | \
+          alignleft aligncenter alignright alignjustify | \
+          bullist numlist outdent indent | removeformat`,
+      },
+
       form: {
         enName: this.destination?.enName ?? '',
         enDescription: this.destination?.enDescription ?? '',

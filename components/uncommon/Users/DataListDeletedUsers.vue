@@ -23,10 +23,10 @@
         <router-link :to="`?p=${data.id}`" class="w-40 w-sm-100">
           <p class="list-item-heading mb-0 truncate">{{ data.fullName }}</p>
         </router-link>
-        <p class="mb-0 text-muted text-small w-15 w-sm-100">
+        <p class="mb-0 text-muted text-small w-50 w-sm-100">
           {{ data.email }}
         </p>
-        <p class="mb-0 text-muted text-small w-15 w-sm-100">
+        <p class="mb-0 text-muted text-small w-30 w-sm-100">
           {{ data.phone }}
         </p>
         <p class="mb-0 text-muted text-small w-15 w-sm-100">
@@ -36,7 +36,7 @@
           {{ moment(data.deletedAt).format('DD-MM-YYYY') }}
         </p>
         <div class="w-15 w-sm-100">
-          <b-badge pill :variant="data.statusColor">{{ data.status }}</b-badge>
+          <b-badge pill :variant="data.status">{{ data.status }}</b-badge>
         </div>
       </div>
       <div class="custom-control custom-checkbox pl-1 align-self-center pr-4">

@@ -165,6 +165,7 @@ export default {
     async fetchDataProvider({ commit, state }, payload) {
       try {
         const response = await this.$axios.get(`/v1/providers/${payload}`, {
+          params: { join: 'billInfos' },
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
 

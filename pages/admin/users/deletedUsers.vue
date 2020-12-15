@@ -117,8 +117,12 @@ export default {
     DataListDeletedUsers,
   },
   async fetch() {
-    this.setUserQuery(this.$route.query)
-    await this.fetchDeletedUsers()
+    try {
+      this.setUserQuery(this.$route.query)
+      await this.fetchDeletedUsers()
+    } catch (e) {
+      this.$toast.error(e)
+    }
   },
   data() {
     return {
@@ -175,19 +179,8 @@ export default {
         await this.deleteUserPer(this.stateUsers.deletedSelectedUser)
         this.stateUsers.deletedSelectedUser = []
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Delete status',
-          text: 'Delete users permantnently successfully',
-        })
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Delete status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }
@@ -198,19 +191,8 @@ export default {
         await this.restoreUser(this.stateUsers.deletedSelectedUser)
         this.stateUsers.deletedSelectedUser = []
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Restore status',
-          text: 'Restore users successfully',
-        })
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Restore status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }

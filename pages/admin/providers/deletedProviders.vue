@@ -117,8 +117,12 @@ export default {
     DataListDeletedProviders,
   },
   async fetch() {
-    this.setProviderQuery(this.$route.query)
-    await this.fetchDeletedProviders()
+    try {
+      this.setProviderQuery(this.$route.query)
+      await this.fetchDeletedProviders()
+    } catch (e) {
+      this.$toast.error(e)
+    }
   },
   data() {
     return {
@@ -176,19 +180,8 @@ export default {
         )
         this.stateProviders.deletedSelectedProvider = []
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Delete status',
-          text: 'Delete providers permanently successfully',
-        })
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Delete status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }
@@ -199,19 +192,8 @@ export default {
         await this.restoreProvider(this.stateProviders.deletedSelectedProvider)
         this.stateProviders.deletedSelectedProvider = []
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Restore status',
-          text: 'Restore providers successfully',
-        })
       } catch (e) {
-        this.$notify({
-          group: 'notify',
-          type: 'error',
-          title: 'Restore status',
-          text: e,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }

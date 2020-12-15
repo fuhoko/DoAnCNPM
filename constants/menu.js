@@ -78,5 +78,17 @@ const data = [
       },
     },
   },
+  {
+    href: '/admin/bill',
+    exactPath: true,
+    title: 'Bills',
+    icon: {
+      element: 'b-icon',
+      attributes: {
+        scale: '0.8',
+        icon: 'newspaper',
+      },
+    },
+  },
 ]
 export default data

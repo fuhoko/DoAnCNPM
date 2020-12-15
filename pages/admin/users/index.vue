@@ -282,7 +282,6 @@
 <script>
 import { Breadcrumb } from '@/components/common'
 import { DataListUsers } from '@/components/uncommon/Users'
-
 import { mapActions, mapMutations, mapState } from 'vuex'
 import moment from 'moment'
 
@@ -292,9 +291,13 @@ export default {
     DataListUsers,
   },
   async fetch() {
-    this.setUserQuery(this.$route.query)
-    await this.fetchDataUsers()
-    await this.fetchDataRoles()
+    try {
+      this.setUserQuery(this.$route.query)
+      await this.fetchDataUsers()
+      await this.fetchDataRoles()
+    } catch (e) {
+      this.$toast.error(e)
+    }
   },
   data() {
     return {
@@ -391,14 +394,6 @@ export default {
         await this.addUser(this.newUser)
         this.$fetch()
         this.hideModal('modalright')
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Add status',
-          text: 'Add user successfully',
-          duration: 10000,
-          speed: 1000,
-        })
         this.newUser = {
           email: '',
           password: '',
@@ -411,15 +406,7 @@ export default {
         }
         this.value = ''
       } catch (e) {
-        console.log(e)
-        this.$notify({
-          group: 'error',
-          type: 'error',
-          title: 'Add error',
-          text: e,
-          duration: 10000,
-          speed: 1000,
-        })
+        this.$toast.error(e)
       }
     },
     async onContextDelete() {
@@ -428,23 +415,8 @@ export default {
         await this.deleteUser(this.stateUsers.selectedUser)
         this.stateUsers.selectedUser = []
         this.$fetch()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Delete status',
-          text: 'Delete users successfully',
-          duration: 10000,
-          speed: 1000,
-        })
       } catch (e) {
-        this.$notify({
-          group: 'error',
-          type: 'error',
-          title: 'Delete status',
-          text: e,
-          duration: 10000,
-          speed: 1000,
-        })
+        this.$toast.error(e)
       } finally {
         this.processing = false
       }

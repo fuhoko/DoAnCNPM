@@ -1,7 +1,6 @@
 export default {
   state: {
-    customers: null,
-    customer: null,
+    payments: null,
     query: {
       page: 0,
       limit: 10,
@@ -12,16 +11,13 @@ export default {
   },
 
   mutations: {
-    SET_CUSTOMERS(state, payload) {
-      state.customers = payload
+    SET_PAYMENTS(state, payload) {
+      state.payments = payload
     },
-    SET_CUSTOMER(state, payload) {
-      state.customer = payload
-    },
-    SET_CUSTOMER_TOTAL(state, payload) {
+    SET_PAYMENT_TOTAL(state, payload) {
       state.total = payload
     },
-    SET_CUSTOMER_QUERY(state, query) {
+    SET_PAYMENT_QUERY(state, query) {
       state.query = { ...state.query, ...{ limit: 10, page: query.page } }
       if (query.s && query.q) {
         state.query.s = `{"$or":[{"${query.s}":{"$contL":"${query.q}"}}]}`
@@ -35,27 +31,24 @@ export default {
   },
 
   actions: {
-    async fetchDataCustomers({ commit, state }) {
+    async fetchDataPayments({ commit, state }) {
       try {
-        const response = await this.$axios.get('/v1/customers', {
+        const response = await this.$axios.get('/v1/payments', {
           params: state.query,
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
-        commit('SET_CUSTOMERS', response.data.data)
-        commit('SET_CUSTOMER_TOTAL', response.data.total)
+        commit('SET_PAYMENTS', response.data.data)
+        commit('SET_PAYMENT_TOTAL', response.data.total)
       } catch (e) {
         throw e.response.data.message[0].description
       }
     },
-    async fetchDataCustomer({ commit, state }, payload) {
+    async addPayment({ commit }, payload) {
       try {
-        const response = await this.$axios.get(`/v1/customers/${payload}`, {
-          params: { join: 'billInfos' },
+        const response = await this.$axios.post('/v1/payments', payload, {
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
-
-        if (response.status === 200) {
-          commit('SET_CUSTOMER', response.data.data)
+        if (response.status === 200 || response.status === 201) {
         }
       } catch (e) {
         throw e.response.data.message[0].description

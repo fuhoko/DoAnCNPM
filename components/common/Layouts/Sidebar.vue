@@ -145,6 +145,21 @@ export default {
             (item) => item.name === 'SERVICES_READ' || item.name === 'ALL'
           ),
         },
+        {
+          href: '/admin/payments',
+          exactPath: true,
+          title: 'Payments',
+          icon: {
+            element: 'b-icon',
+            attributes: {
+              scale: '0.6',
+              icon: 'card-list',
+            },
+          },
+          hidden: !this.$store.state.auth.currentUser.role.permissions.some(
+            (item) => item.name === 'PAYMENTS_READ' || item.name === 'ALL'
+          ),
+        },
       ],
     }
   },

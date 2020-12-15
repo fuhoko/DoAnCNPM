@@ -84,10 +84,6 @@
               @toggle-item="toggleItem"
             />
           </b-col>
-          <div>
-            <notifications group="notify" position="top center" />
-            <notifications group="error" position="top center" />
-          </div>
         </b-row>
       </template>
       <v-contextmenu ref="contextmenu" @contextmenu="handleContextmenu">
@@ -179,6 +175,7 @@ export default {
         await this.deleteUserPer(this.stateUsers.deletedSelectedUser)
         this.stateUsers.deletedSelectedUser = []
         this.$fetch()
+        this.$toast('Deleted Permanently')
       } catch (e) {
         this.$toast.error(e)
       } finally {
@@ -191,6 +188,7 @@ export default {
         await this.restoreUser(this.stateUsers.deletedSelectedUser)
         this.stateUsers.deletedSelectedUser = []
         this.$fetch()
+        this.$toast.success('Restored')
       } catch (e) {
         this.$toast.error(e)
       } finally {

@@ -1,6 +1,7 @@
 export default {
   state: {
     services: null,
+    service: null,
     query: {
       page: 0,
       limit: 10,
@@ -14,6 +15,9 @@ export default {
   mutations: {
     SET_SERVICES(state, payload) {
       state.services = payload
+    },
+    SET_SERVICE(state, payload) {
+      state.service = payload
     },
     SET_SERVICE_TOTAL(state, payload) {
       state.total = payload
@@ -69,6 +73,19 @@ export default {
         await this.$axios.delete(`/v1/services/${payload}`, {
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
+      } catch (e) {
+        throw e.response.data.message[0].description
+      }
+    },
+    async fetchDataService({ commit, state }, payload) {
+      try {
+        const response = await this.$axios.get(`/v1/services/${payload}`, {
+          headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
+        })
+
+        if (response.status === 200) {
+          commit('SET_SERVICE', response.data.data)
+        }
       } catch (e) {
         throw e.response.data.message[0].description
       }

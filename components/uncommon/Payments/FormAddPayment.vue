@@ -24,9 +24,19 @@
       >
         <b-form-group label="Bill's Info" class="mb-7">
           <b-form-select
+            v-if="form.type == 'GET_IN'"
             v-model="form.billInfoId"
             class="mb-3"
-            :options="customers.billInfos"
+            :options="customer.billInfos"
+            value-field="id"
+            text-field="bankAccount"
+          >
+          </b-form-select>
+          <b-form-select
+            v-if="form.type == 'PAY_OUT'"
+            v-model="form.billInfoId"
+            class="mb-3"
+            :options="provider.billInfos"
             value-field="id"
             text-field="bankAccount"
           >
@@ -44,8 +54,8 @@
       >
         <b-form-group :label="`Amount`">
           <b-form-input
-            v-model="form.Amount"
-            type="number"
+            v-model="form.amount"
+            :number="true"
             :state="
               validationContext.errors[0]
                 ? false
@@ -83,12 +93,16 @@ export default {
       type: Object,
       default: null,
     },
-    customers: {
-      type: Array,
+    customer: {
+      type: Object,
       default: null,
     },
-    services: {
-      type: Array,
+    service: {
+      type: Object,
+      default: null,
+    },
+    provider: {
+      type: Object,
       default: null,
     },
     processing: {
@@ -100,7 +114,7 @@ export default {
     return {
       form: {
         billId: this.bill?.id ?? 0,
-        billInfoId: 0,
+        billInfoId: this.customer?.billInfos.id ?? 0,
         amount: 0,
         description: '',
         type: '',

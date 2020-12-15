@@ -32,6 +32,12 @@
           </b-row>
           <div class="ml-auto">
             <b-button
+              v-if="
+                stateAuth.currentUser.role.permissions.some(
+                  (item) =>
+                    item.name === 'SERVICE_CREATE' || item.name === 'ALL'
+                )
+              "
               v-b-modal.modal-create
               size="sm"
               variant="outline-main-color"
@@ -46,6 +52,14 @@
               >
             </b-button>
             <b-button
+              v-if="
+                stateAuth.currentUser.role.permissions.some(
+                  (item) =>
+                    (item.name === 'SERVICE_DELETE' &&
+                      item.name === 'SERVICE_SOFT_DEL') ||
+                    item.name === 'ALL'
+                )
+              "
               size="sm"
               :class="{
                 'btn-multiple-state': true,
@@ -206,6 +220,12 @@
           </template>
           <template v-slot:cell(action)="{ item }">
             <b-button
+              v-if="
+                stateAuth.currentUser.role.permissions.some(
+                  (item) =>
+                    item.name === 'SERVICE_UPDATE' || item.name === 'ALL'
+                )
+              "
               variant="outline-main-color"
               size="sm"
               @click="fillFormEditService(item.id)"
@@ -284,7 +304,8 @@ import { fileMixin } from '@/mixins'
 import { MultiStepEditService } from '@/components/uncommon'
 export default {
   layout: 'admin',
-  middleware: 'authenticated',
+  middleware: 'authorization',
+  permissions: ['SERVICE_READ'],
   components: {
     MultiStepEditService,
   },

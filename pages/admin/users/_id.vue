@@ -47,9 +47,12 @@
                 Status
               </p>
               <p class="mb-3">
-                <b-badge variant="outline-secondary" class="mb-1 mr-1" pill>{{
-                  stateUsers.user.status
-                }}</b-badge>
+                <b-badge
+                  :variant="stateUsers.user.status"
+                  class="mb-1 mr-1"
+                  pill
+                  >{{ stateUsers.user.status }}</b-badge
+                >
               </p>
               <p class="text-muted text-small mb-2">Contact</p>
             </b-card-body>
@@ -108,9 +111,6 @@
                   {{
                     moment(stateUsers.user.role.deletedAt).format('DD-MM-YYYY')
                   }}
-                </p>
-                <p class="text-muted text-small mb-2">
-                  Permission
                 </p>
               </div>
             </b-card-body>

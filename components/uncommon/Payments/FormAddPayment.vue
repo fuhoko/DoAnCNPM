@@ -33,7 +33,7 @@
           >
           </b-form-select>
           <b-form-select
-            v-if="form.type == 'PAY_OUT'"
+            v-if="form.type == 'PAY_OUT' && provider"
             v-model="form.billInfoId"
             class="mb-3"
             :options="provider.billInfos"

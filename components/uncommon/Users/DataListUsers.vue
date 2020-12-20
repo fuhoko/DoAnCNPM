@@ -72,10 +72,6 @@
         ></FormEditUsers>
       </b-modal>
     </div>
-    <div>
-      <notifications group="notify" position="top center" />
-      <notifications group="error" position="top center" />
-    </div>
   </b-card>
 </template>
 
@@ -125,21 +121,11 @@ export default {
         await this.editUser(form)
         this.fetch()
         this.$refs['modal-edit'].hide()
-        this.$notify({
-          group: 'notify',
-          type: 'success',
-          title: 'Edit status',
-          text: 'Edit user successfully',
-          duration: 10000,
-        })
+        this.$toast.success('Edit successful')
       } catch (e) {
-        this.$notify({
-          group: 'error',
-          type: 'error',
-          title: 'Edit error',
-          text: e,
-          duration: 10000,
-        })
+        this.$toast.error(e)
+      } finally {
+        this.processing = false
       }
     },
     fillDataFormEditUser(id) {

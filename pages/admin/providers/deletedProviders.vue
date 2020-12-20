@@ -84,10 +84,6 @@
               @toggle-item="toggleItem"
             />
           </b-col>
-          <div>
-            <notifications group="notify" position="top center" />
-            <notifications group="error" position="top center" />
-          </div>
         </b-row>
       </template>
       <v-contextmenu ref="contextmenu" @contextmenu="handleContextmenu">
@@ -180,6 +176,7 @@ export default {
         )
         this.stateProviders.deletedSelectedProvider = []
         this.$fetch()
+        this.$toast.success('Deleted Permanently')
       } catch (e) {
         this.$toast.error(e)
       } finally {
@@ -192,6 +189,7 @@ export default {
         await this.restoreProvider(this.stateProviders.deletedSelectedProvider)
         this.stateProviders.deletedSelectedProvider = []
         this.$fetch()
+        this.$toast.success('Restored')
       } catch (e) {
         this.$toast.error(e)
       } finally {

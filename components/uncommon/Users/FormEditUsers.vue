@@ -143,7 +143,7 @@ export default {
         status: this.user.status,
         gender: this.user.gender,
         birthday: this.user.birthday,
-        roleId: this.user.roleId,
+        roleId: this.user.role.id,
         phone: this.user.phone,
       },
       moment,

@@ -237,7 +237,14 @@
       </b-card>
     </div>
     <div>
-      <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
+      <b-modal
+        id="modal-create"
+        ref="modal-create"
+        no-enforce-focus
+        no-close-on-backdrop
+        hide-footer
+        size="lg"
+      >
         <multi-step-edit-service
           :processing="processing"
           :destinations="stateDestination.destinations"
@@ -248,7 +255,13 @@
           @onSubmit="onCreate"
         ></multi-step-edit-service>
       </b-modal>
-      <b-modal ref="modal-update" hide-footer size="lg">
+      <b-modal
+        ref="modal-update"
+        no-enforce-focus
+        no-close-on-backdrop
+        hide-footer
+        size="lg"
+      >
         <multi-step-edit-service
           :service="stateService.serviceSelected"
           :processing="processing"
@@ -256,6 +269,7 @@
           :categories="stateCategory.categories"
           :providers="stateProvider.providers"
           @loadDestinationOptions="loadDestinationOptions"
+          @loadProviderOptions="loadProviderOptions"
           @onSubmit="onUpdate"
         ></multi-step-edit-service>
       </b-modal>
@@ -270,11 +284,12 @@ import { fileMixin } from '@/mixins'
 import { MultiStepEditService } from '@/components/uncommon'
 export default {
   layout: 'admin',
-  middleware: 'authenticated',
   components: {
     MultiStepEditService,
   },
   mixins: [fileMixin],
+  middleware: 'authorization',
+  permissions: ['SERVICE_READ'],
   async fetch() {
     this.setServiceQuery(this.$route.query)
     await Promise.all([
@@ -358,6 +373,7 @@ export default {
       'createService',
       'deleteService',
       'getDataServiceSelected',
+      'updateService',
     ]),
     ...mapMutations({
       setServiceQuery: 'SET_SERVICE_QUERY',
@@ -421,12 +437,12 @@ export default {
       }
     },
 
-    async onCreate(thumbnail, form, gallery) {
+    async onCreate(thumbnail, form) {
       try {
         this.processing = true
         form.thumbnail = await this.uploadFileToS3(thumbnail, 'Thumbnail')
-        form.gallery = await this.uploadFilesToS3(gallery, 'Gallery')
-        this.createService(form)
+        // form.gallery = await this.uploadFilesToS3(gallery, 'Gallery')
+        await this.createService(form)
         this.$refs['modal-create'].hide()
         this.$fetch()
         this.$toast.success('Create successful')
@@ -461,7 +477,22 @@ export default {
       this.$refs['modal-update'].show()
     },
 
-    onUpdate() {},
+    async onUpdate(thumbnail, form) {
+      try {
+        this.processing = true
+        if (thumbnail) {
+          form.thumbnail = await this.uploadFileToS3(thumbnail, 'Thumbnail')
+        }
+        await this.updateService(form)
+        this.$refs['modal-update'].hide()
+        this.$fetch()
+        this.$toast.success('Create successful')
+      } catch (e) {
+        this.$toast.error(e)
+      } finally {
+        this.processing = false
+      }
+    },
   },
 }
 </script>

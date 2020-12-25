@@ -5,7 +5,7 @@
     </div>
     <div>
       <b-card title="Manage Categories">
-        <!-- <div class="mb-6 d-flex align-items-center">
+        <div class="mb-6 d-flex align-items-center">
           <b-row class="w-50">
             <b-col cols="5">
               <b-input-group class="mb-3" size="sm">
@@ -30,7 +30,7 @@
               </b-input-group>
             </b-col>
           </b-row>
-          <div class="ml-auto">
+          <!-- <div class="ml-auto">
             <b-button
               v-b-modal.modal-create
               size="sm"
@@ -68,8 +68,8 @@
                 />Delete</span
               >
             </b-button>
-          </div>
-        </div> -->
+          </div> -->
+        </div>
         <b-table
           head-variant="light"
           responsive
@@ -79,7 +79,7 @@
           primary-key="id"
           @sort-changed="sortingChanged"
         >
-          <template v-slot:cell(select)="{ item }">
+          <!-- <template v-slot:cell(select)="{ item }">
             <b-form-checkbox
               :checked="selected.includes(item.id)"
               @change="
@@ -88,7 +88,7 @@
                 }
               "
             />
-          </template>
+          </template> -->
           <template v-slot:cell(avatar)="{ item }">
             <b-button
               variant="outline-main-color"
@@ -109,14 +109,14 @@
               <b-spinner class="align-middle"></b-spinner>
             </div>
           </template>
-          <template v-slot:cell(action)="{ item }">
+          <!-- <template v-slot:cell(action)="{ item }">
             <b-button
               variant="outline-main-color"
               size="sm"
               @click="fillFormEditService(item.id)"
               >Edit</b-button
             >
-          </template>
+          </template> -->
         </b-table>
         <b-pagination
           v-if="!$fetchState.pending"
@@ -146,24 +146,26 @@
         <div class="d-flex justify-content-center align-items-center">
           <b-img thumbnail fluid :src="urlAvatarSelected"></b-img></div
       ></b-modal>
-      <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
+      <!-- <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
         <form-edit-customer
           :processing="processing"
           @onSubmit="onCreate"
         ></form-edit-customer>
-      </b-modal>
+      </b-modal> -->
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
-import { FormEditCustomer } from '@/components/uncommon'
+// import { FormEditCustomer } from '@/components/uncommon'
 export default {
   layout: 'admin',
   components: {
-    FormEditCustomer,
+    // FormEditCustomer,
   },
+  middleware: 'authorization',
+  permissions: ['CUSTOMER_READ'],
   async fetch() {
     try {
       this.setCustomerQuery(this.$route.query)
@@ -181,7 +183,7 @@ export default {
         longitude: '',
       },
       fields: [
-        'select',
+        // 'select',
         { key: 'id', label: 'Index', sortable: true },
         { key: 'fullName', label: 'Name', sortable: true },
         { key: 'email', sortable: true },
@@ -191,7 +193,7 @@ export default {
         'avatar',
         { key: 'createdAt', sortable: true },
         { key: 'updatedAt', sortable: true },
-        'action',
+        // 'action',
       ],
       searchKeyword: this.$route.query.q ? this.$route.query.q : '',
       selectedFieldSearch: this.$route.query.s
@@ -239,7 +241,7 @@ export default {
       }
     },
   },
-  mounted() {
+  created() {
     console.log(this.stateCustomer.customers)
   },
   methods: {

@@ -6,12 +6,12 @@
     <div>
       <b-card title="Manage Bills">
         <div class="mb-6 d-flex align-items-center">
-          <div class="search-sm d-inline-block">
-            <b-input
-              v-model="searchKeyword"
-              placeholder="Search"
-              @keyup.enter="search"
-            />
+          <div class="mb-6 d-flex align-items-center">
+            <b class="mr-2">Added by:</b>
+            <b-form-radio-group v-model="isUserNull">
+              <b-form-radio value="notnull" @input="isUser()">Users</b-form-radio>
+              <b-form-radio value="isnull">Customers</b-form-radio>
+            </b-form-radio-group>
           </div>
           <div class="ml-auto">
             <b-button
@@ -67,8 +67,7 @@
               @change="
                 (checked) => {
                   toggleSelection(item.id, checked)
-                }
-              "
+                }"
             />
           </template>
           <template v-slot:cell(details)="{ item, detailsShowing }">
@@ -149,8 +148,7 @@
                   item.id,
                   item.customer.id,
                   item.billServices[0].serviceId
-                )
-              "
+                )"
               >Pay</b-button
             >
           </template>
@@ -249,6 +247,7 @@ export default {
   },
   data() {
     return {
+      isUserNull: 'notnull',
       processing: false,
       disabled: true,
       fields: [
@@ -414,6 +413,10 @@ export default {
       await this.fetchDataCustomer(id)
       return this.stateCustomer.customer
     },
+    async isUser() {
+      this.stateBill.query.filter = 'userId||$' + this.isUserNull
+      await this.fetchDataBills()
+    }
   },
 }
 </script>

@@ -8,10 +8,13 @@
         <b-col xxs="12" lg="5" xl="4" class="col-left">
           <b-card class="mb-4" no-body>
             <b-card-body>
-              <b-img :src="stateUsers.user.avatar" center />
+              <b-img :src="stateUsers.user.avatar" fluid center />
               <div class="text-center pt-4">
                 <p class="list-item-heading pt-2">
                   {{ stateUsers.user.fullName }}
+                </p>
+                <p class="mb-3 mt-3">
+                  {{ stateUsers.user.bio }}
                 </p>
                 <b-button
                   size="sm"
@@ -22,9 +25,6 @@
                   Profile
                 </b-button>
               </div>
-              <p class="mb-3 mt-3">
-                {{ stateUsers.user.bio }}
-              </p>
               <p class="text-muted text-small mb-2">
                 Gender
               </p>
@@ -54,7 +54,8 @@
                   >{{ stateUsers.user.status }}</b-badge
                 >
               </p>
-              <p class="text-muted text-small mb-2">Contact</p>
+              <p class="text-muted text-small mb-2">Note</p>
+              <p class="mb-3">{{ stateUsers.user.note }}</p>
             </b-card-body>
           </b-card>
         </b-col>

@@ -1,5 +1,6 @@
 <template>
   <b-card no-body>
+    <b-overlay :show="processing" spinner-variant="main-color" no-wrap />
     <b-card-body class="wizard wizard-default">
       <form-wizard :top-nav-disabled="true" :with-validate="true">
         <tab

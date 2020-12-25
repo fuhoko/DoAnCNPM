@@ -32,6 +32,8 @@ export default {
   components: {
     CollapseMenu,
   },
+  middleware: 'authorization',
+  permissions: ['SERVICE_CATEGORY_READ'],
   async fetch() {
     try {
       await this.fetchDataCategories()

@@ -1,5 +1,6 @@
 <template>
   <div class="container-form-edit-role">
+    <b-overlay :show="processing" spinner-variant="main-color" no-wrap />
     <validation-observer v-slot="{ handleSubmit }">
       <b-form @submit.prevent="handleSubmit(() => submitFormEdit(form))">
         <validation-provider

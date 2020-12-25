@@ -40,6 +40,9 @@ export default {
               icon: 'collection',
             },
           },
+          hidden: !this.$store.state.auth.currentUser.role.permissions.some(
+            (item) => item.name === 'CUSTOMER_READ' || item.name === 'ALL'
+          ),
         },
         {
           href: '/admin/roles',
@@ -99,6 +102,10 @@ export default {
               icon: 'collection',
             },
           },
+          hidden: !this.$store.state.auth.currentUser.role.permissions.some(
+            (item) =>
+              item.name === 'SERVICE_CATEGORY_READ' || item.name === 'ALL'
+          ),
         },
         {
           href: '/admin/destinations',

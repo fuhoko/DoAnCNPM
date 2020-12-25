@@ -164,6 +164,8 @@ export default {
   components: {
     // FormEditCustomer,
   },
+  middleware: 'authorization',
+  permissions: ['CUSTOMER_READ'],
   async fetch() {
     try {
       this.setCustomerQuery(this.$route.query)

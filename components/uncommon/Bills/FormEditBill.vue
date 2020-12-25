@@ -29,7 +29,7 @@
                       :options="customers"
                       value-field="id"
                       text-field="fullName"
-                      @change="onChange"
+                      @change="onChangeCustomer"
                     >
                       <!-- <b-form-select-option
                         v-for="(customer, index) in customers"
@@ -44,6 +44,20 @@
                     }}</b-form-invalid-feedback>
                   </b-form-group>
                 </validation-provider>
+                <b-form-group
+                  v-if="stateCustomer.customer"
+                  label="E-mail"
+                  class="mb-7"
+                >
+                  <b-form-input v-model="email" readonly />
+                </b-form-group>
+                <b-form-group
+                  v-if="stateCustomer.customer"
+                  label="Phone"
+                  class="mb-7"
+                >
+                  <b-form-input v-model="phone" readonly />
+                </b-form-group>
                 <!-- <validation-provider
                   v-slot="validationContext"
                   name="Email"
@@ -100,7 +114,7 @@
                       :options="services"
                       value-field="id"
                       text-field="enTitle"
-                      @change="onChange"
+                      @change="onChangeService"
                     >
                       <!-- <b-form-select-option
                         v-for="(customer, index) in customers"
@@ -194,6 +208,7 @@
 
 <script>
 import { Tab, FormWizard } from '@/components/common'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   components: {
@@ -220,6 +235,9 @@ export default {
   },
   data() {
     return {
+      email: '',
+      phone: '',
+      customer: {},
       statusChoice: [
         'PENDING',
         'CUSTOMER_PAYING',
@@ -238,14 +256,25 @@ export default {
             id: this.bill?.billServices[0].id ?? null,
             serviceId: this.bill?.billServices[0].serviceId ?? null,
             quantity: this.bill?.billServices[0].quantity ?? null,
-            price: this.bill?.billServices[0].price ?? null,
-            netPrice: this.bill?.billServices[0].netPrice ?? null,
+            price: this.bill?.billServices[0].price ?? 0,
+            netPrice: this.bill?.billServices[0].netPrice ?? 0,
           },
         ],
       },
     }
   },
+  computed: {
+    ...mapState({
+      stateCustomer: (state) => state.customer,
+      stateService: (state) => state.service,
+    }),
+  },
   methods: {
+    ...mapActions(['fetchDataCustomer', 'fetchDataService']),
+    ...mapMutations({
+      setCustomerQuery: 'SET_CUSTOMER_QUERY',
+      setServiceQuery: 'SET_SERVICE_QUERY',
+    }),
     getValidationState({ dirty, validated, valid = null }) {
       return dirty || validated ? valid : null
     },
@@ -262,8 +291,17 @@ export default {
         })
       }
     },
-    onChange(event) {
-      // console.log(event.target.value)
+    async onChangeCustomer(event) {
+      console.log(this.form.customerId ?? null)
+      await this.fetchDataCustomer(this.form.customerId)
+      this.email = this.stateCustomer.customer?.email ?? ''
+      this.phone = this.stateCustomer.customer?.phone ?? ''
+    },
+    async onChangeService(event) {
+      console.log(this.form.billServices[0].serviceId ?? null)
+      await this.fetchDataService(this.form.billServices[0].serviceId)
+      this.form.billServices[0].price = this.stateService.service.currentPrice
+      this.form.billServices[0].netPrice = this.stateService.service.netPrice
     },
     async validateStep0() {
       const { valid } = await this.$refs.formChild0.validate()
@@ -281,6 +319,9 @@ export default {
 
     done() {
       this.$emit('onSubmit', this.file, this.form)
+    },
+    fetchSelectedCustomer(id) {
+      this.$emit('fetchSelectedCustomer', id)
     },
   },
 }

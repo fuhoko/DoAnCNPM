@@ -288,6 +288,8 @@ export default {
     MultiStepEditService,
   },
   mixins: [fileMixin],
+  middleware: 'authorization',
+  permissions: ['SERVICE_READ'],
   async fetch() {
     this.setServiceQuery(this.$route.query)
     await Promise.all([

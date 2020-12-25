@@ -243,12 +243,13 @@ import { MultiStepEditDestination } from '@/components/uncommon'
 import { fileMixin } from '@/mixins'
 export default {
   layout: 'admin',
-  middleware: 'authenticated',
   components: {
     GoogleMap,
     MultiStepEditDestination,
   },
   mixins: [fileMixin],
+  middleware: 'authorization',
+  permissions: ['DESTINATION_READ'],
   async fetch() {
     try {
       this.setDestinationQuery(this.$route.query)

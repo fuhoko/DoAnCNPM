@@ -185,6 +185,7 @@
           :customers="stateCustomer.customers"
           :services="stateService.services"
           @onSubmit="onCreate"
+          @fetchSelectedCustomer="fetchSelectedCustomer"
         ></FormEditBill>
       </b-modal>
       <b-modal ref="modal-update" hide-footer size="lg">
@@ -194,6 +195,7 @@
           :customers="stateCustomer.customers"
           :services="stateService.services"
           @onSubmit="onUpdate"
+          @fetchSelectedCustomer="fetchSelectedCustomer"
         ></FormEditBill>
       </b-modal>
       <b-modal
@@ -235,8 +237,8 @@ export default {
   async fetch() {
     try {
       this.setBillQuery(this.$route.query)
-      this.stateService.query.limit = this.stateService.total
-      this.stateCustomer.query.limit = this.stateCustomer.total
+      this.stateService.query.limit = this.stateService.query.total
+      this.stateCustomer.query.limit = this.stateCustomer.query.total
       await this.fetchDataBills()
       await this.fetchDataCustomers()
       await this.fetchDataServices()
@@ -365,11 +367,17 @@ export default {
       this.$refs['modal-update'].show()
     },
     async fillFormAddPayment(id, customerId, serviceId) {
-      this.setDataBillSelected(id)
-      await this.fetchDataCustomer(customerId)
-      await this.fetchDataService(serviceId)
-      await this.fetchDataProvider(this.stateService.service.providers[0].id)
-      this.$refs['modal-add'].show()
+      if (serviceId == null) {
+        this.setDataBillSelected(id)
+        await this.fetchDataCustomer(customerId)
+        this.$refs['modal-add'].show()
+      } else {
+        this.setDataBillSelected(id)
+        await this.fetchDataCustomer(customerId)
+        await this.fetchDataService(serviceId)
+        await this.fetchDataProvider(this.stateService.service.providers[0].id)
+        this.$refs['modal-add'].show()
+      }
     },
 
     async onUpdate(file, form) {
@@ -401,6 +409,10 @@ export default {
     },
     hideModalAdd() {
       this.$refs['modal-add'].hide()
+    },
+    async fetchSelectedCustomer(id) {
+      await this.fetchDataCustomer(id)
+      return this.stateCustomer.customer
     },
   },
 }

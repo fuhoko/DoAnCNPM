@@ -239,7 +239,7 @@ export default {
       try {
         this.processing = true
         await this.deleteRole(this.selected)
-        this.selected = 0
+        this.selected = []
         this.$fetch()
         this.$toast.success('Delete successful')
       } catch (e) {

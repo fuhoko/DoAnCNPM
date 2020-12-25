@@ -76,8 +76,7 @@
                             ? false
                             : validationContext.valid
                             ? true
-                            : null
-                        "
+                            : null"
                       />
                       <b-form-invalid-feedback>{{
                         validationContext.errors[0]
@@ -90,9 +89,28 @@
                       :options="genderChoice"
                     />
                   </b-form-group>
-                  <b-form-group :label="`Avatar URL`">
-                    <b-form-input v-model="newProvider.avatar" />
-                  </b-form-group>
+                  <validation-provider
+                    v-slot="validationContext"
+                    name="Avatar"
+                    :rules="{ required: true }"
+                  >
+                    <b-form-group :label="`Avatar`">
+                      <b-form-file
+                        v-model="file"
+                        :state="
+                          validationContext.errors[0]
+                            ? false
+                            : validationContext.valid
+                            ? true
+                            : null"
+                        accept="image/*"
+                        @change="handleChange"
+                      ></b-form-file>
+                    </b-form-group>
+                    <b-form-invalid-feedback>{{
+                      validationContext.errors[0]
+                    }}</b-form-invalid-feedback>
+                  </validation-provider>
                   <b-form-group :label="`Full Name`">
                     <b-form-input v-model="newProvider.name" />
                   </b-form-group>
@@ -144,7 +162,6 @@
                     >{{ order.label }}</b-dropdown-item
                   >
                 </b-dropdown>
-
                 <div
                   class="search-sm d-inline-block float-md-left mr-1 align-top"
                 >
@@ -180,7 +197,6 @@
           <div class="separator mb-5" />
         </b-col>
       </b-row>
-
       <template>
         <b-row>
           <b-col
@@ -294,6 +310,8 @@ export default {
       moment,
       value: '',
       processing: false,
+      file: null,
+      imageUrl: '',
     }
   },
   layout: 'admin',
@@ -322,27 +340,11 @@ export default {
         )
       }
     },
-    // currentPage: {
-    //   get() {
-    //     if (this.$route.query.page) return this.$route.query.page
-    //     else return 1
-    //   },
-    //   set(val) {
-    //     this.$router.push({ query: { page: val } })
-    //   },
-    // },
   },
   watch: {
     $route() {
       this.$fetch()
     },
-    // selected(val) {
-    //   if (val.length > 0) {
-    //     this.disabled = false
-    //   } else {
-    //     this.disabled = true
-    //   }
-    // },
   },
   mounted() {},
   methods: {
@@ -523,6 +525,20 @@ export default {
     linkGen(pageNum) {
       return {
         query: { page: pageNum },
+      }
+    },
+    getBase64(img, callback) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => callback(reader.result))
+      reader.readAsDataURL(img)
+    },
+    handleChange(e) {
+      const file = e.target.files[0]
+      if (file) {
+        this.getBase64(file, (imageUrl) => {
+          this.imageUrl = imageUrl
+          this.newProvider.avatar = imageUrl
+        })
       }
     },
   },

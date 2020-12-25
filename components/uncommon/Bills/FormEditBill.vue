@@ -49,14 +49,14 @@
                   label="E-mail"
                   class="mb-7"
                 >
-                  <b-form-input v-model="this.email" readonly />
+                  <b-form-input v-model="email" readonly />
                 </b-form-group>
                 <b-form-group
                   v-if="stateCustomer.customer"
                   label="Phone"
                   class="mb-7"
                 >
-                  <b-form-input v-model="this.phone" readonly />
+                  <b-form-input v-model="phone" readonly />
                 </b-form-group>
                 <!-- <validation-provider
                   v-slot="validationContext"

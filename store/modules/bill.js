@@ -5,7 +5,8 @@ export default {
     bill: null,
     query: {
 			page: 1,
-			limit: 10,
+      limit: 10,
+      filter: 'userId||$notnull',
 			// sort: 'fullName,ASC',
 			// s: null,
     },

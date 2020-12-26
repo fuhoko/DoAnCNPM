@@ -1,8 +1,11 @@
 <template>
   <validation-observer v-slot="{ handleSubmit }">
     <b-form @submit.prevent="handleSubmit(() => submitFormAdd(form))">
-      <b-form-group label="Provider ID" class="mb-7">
+      <b-form-group v-if="provider.id" label="Provider ID" class="mb-7">
         <b-form-input v-model="provider.id" readonly />
+      </b-form-group>
+      <b-form-group v-if="customer.id" label="Customer ID" class="mb-7">
+        <b-form-input v-model="customer.id" readonly />
       </b-form-group>
       <validation-provider
         v-slot="validationContext"
@@ -92,12 +95,15 @@ export default {
       type: Object,
       default: () => {
         return {
-          id: '',
-          name: '',
-          email: '',
-          gender: '',
-          birthday: '',
-          phone: '',
+          id: null,
+        }
+      },
+    },
+    customer: {
+      type: Object,
+      default: () => {
+        return {
+          id: null,
         }
       },
     },
@@ -113,8 +119,8 @@ export default {
         bankAccount: '',
         bankName: '',
         bankNumber: '',
-        customerId: null,
-        providerId: this.provider.id,
+        customerId: this.customer?.id ?? null,
+        providerId: this.provider?.id ?? null,
       },
     }
   },

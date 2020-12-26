@@ -28,7 +28,7 @@ export default {
     SET_BILL_TOTAL(state, payload) {
       state.total = payload
     },
-    SET_PAGE_COUNT(state, payload) {
+    SET_BILL_PAGE_COUNT(state, payload) {
       state.pageCount = payload
     },
     SET_DELETED_BILLS(state, payload) {
@@ -64,7 +64,7 @@ export default {
         if (response.status === 200) {
           commit('SET_BILLS', response.data.data)
           commit('SET_BILL_TOTAL', response.data.total)
-          commit('SET_PAGE_COUNT', response.data.pageCount)
+          commit('SET_BILL_PAGE_COUNT', response.data.pageCount)
         }
       } catch (e) {
         throw e.response.data.message[0].description

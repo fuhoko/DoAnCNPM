@@ -235,11 +235,11 @@ export default {
   async fetch() {
     try {
       this.setBillQuery(this.$route.query)
-      this.stateService.query.limit = this.stateService.query.total
-      this.stateCustomer.query.limit = this.stateCustomer.query.total
       await this.fetchDataBills()
       await this.fetchDataCustomers()
+      await this.fetchAllCustomers()
       await this.fetchDataServices()
+      await this.fetchAllServices()
       await this.fetchDataProviders()
     } catch (e) {
       this.$toast.error(e)
@@ -416,6 +416,30 @@ export default {
     async isUser() {
       this.stateBill.query.filter = 'userId||$' + this.isUserNull
       await this.fetchDataBills()
+    },
+    async fetchAllServices() {
+      const allServices = []
+      let i = this.stateService.pageCount
+      for (i = this.stateService.pageCount; i > 0; i--) {
+        this.stateService.query.page = i
+        await this.fetchDataServices()
+        this.stateService.services.forEach(service => {
+          allServices.unshift(service)
+        })
+      }
+      this.stateService.services = allServices
+    },
+    async fetchAllCustomers() {
+      const allCustomers = []
+      let i = this.stateCustomer.pageCount
+      for (i = this.stateCustomer.pageCount; i > 0; i--) {
+        this.stateCustomer.query.page = i
+        await this.fetchDataCustomers()
+        this.stateCustomer.customers.forEach(customer => {
+          allCustomers.unshift(customer)
+        })
+      }
+      this.stateCustomer.customers = allCustomers
     }
   },
 }

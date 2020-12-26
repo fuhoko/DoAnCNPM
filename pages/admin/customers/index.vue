@@ -109,7 +109,7 @@
               <b-spinner class="align-middle"></b-spinner>
             </div>
           </template>
-          <!-- <template v-slot:cell(action)="{ item }">
+          <template v-slot:cell(action)="{ item }">
             <b-button
               variant="outline-main-color"
               size="sm"
@@ -152,7 +152,7 @@
         <div class="d-flex justify-content-center align-items-center">
           <b-img thumbnail fluid :src="urlAvatarSelected"></b-img></div
       ></b-modal>
-      <!-- <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
+      <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
         <form-edit-customer
           :processing="processing"
           @onSubmit="onCreate"
@@ -177,11 +177,9 @@
     </div>
   </div>
 </template>
-
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import { FormEditCustomer , FormAddBillInfo } from '@/components/uncommon'
-
 export default {
   layout: 'admin',
   components: {
@@ -291,14 +289,12 @@ export default {
         })
       }
     },
-
     showAvatar(id) {
       this.urlAvatarSelected = this.stateCustomer.customers
         .filter((item) => (item.id = id))
         .map((item) => item.avatar)[0]
       this.$refs['modal-avatar'].show()
     },
-
     search() {
       this.$router.push({
         query: { s: this.selectedFieldSearch, q: this.searchKeyword },
@@ -324,14 +320,11 @@ export default {
     hideModalAdd() {
       this.$refs['modal-add'].hide()
     },
-
     onCreate() {},
-
     
   },
 }
 </script>
-
 <style lang="scss" scoped>
 .input-search {
   border-top-left-radius: 0 !important;

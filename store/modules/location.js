@@ -23,6 +23,7 @@ export default {
         throw e.response.data.message[0].description
       }
     },
+    
 
     async createLocation(context, payload) {
       try {

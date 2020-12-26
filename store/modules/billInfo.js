@@ -6,6 +6,7 @@ export default {
       limit: 10,
       s: null,
       sort: null,
+      type: '',
     },
     total: 0,
   },
@@ -43,10 +44,10 @@ export default {
         throw e.response.data.message[0].description
       }
     },
-    async addBillInfo({ commit }, payload) {
+    async addBillInfo({ commit, state}, payload) {
       try {
         const response = await this.$axios.post('/v1/billInfos', payload, {
-          params: { type: 'PROVIDER' },
+          params: state.query,
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
         })
         if (response.status === 200 || response.status === 201) {

@@ -9,6 +9,7 @@ export default {
       sort: null,
     },
     total: 0,
+    pageCount: 0
   },
 
   mutations: {
@@ -20,6 +21,9 @@ export default {
     },
     SET_CUSTOMER_TOTAL(state, payload) {
       state.total = payload
+    },
+    SET_CUSTOMER_PAGE_COUNT(state, payload) {
+      state.pageCount = payload
     },
     SET_CUSTOMER_QUERY(state, query) {
       state.query = { ...state.query, ...{ limit: 10, page: query.page } }
@@ -43,6 +47,7 @@ export default {
         })
         commit('SET_CUSTOMERS', response.data.data)
         commit('SET_CUSTOMER_TOTAL', response.data.total)
+        commit('SET_CUSTOMER_PAGE_COUNT', response.data.pageCount)
       } catch (e) {
         throw e.response.data.message[0].description
       }

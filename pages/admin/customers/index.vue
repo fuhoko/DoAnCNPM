@@ -116,7 +116,13 @@
               @click="fillFormEditService(item.id)"
               >Edit</b-button
             >
-          </template> -->
+            <b-button
+              variant="outline-main-color"
+              size="sm"
+              @click="fillDataFormAddBillInfo(item.id)"
+              >Bill Infos</b-button
+            >
+          </template>
         </b-table>
         <b-pagination
           v-if="!$fetchState.pending"
@@ -151,18 +157,36 @@
           :processing="processing"
           @onSubmit="onCreate"
         ></form-edit-customer>
-      </b-modal> -->
+      </b-modal>
+      <b-modal
+          ref="modal-add"
+          no-close-on-backdrop
+          no-close-on-esc
+          :title="`Add Bill Info`"
+          hide-footer
+          scrollable
+        >
+          <FormAddBillInfo
+            :customer="stateCustomer.customer"
+            :processing="processing"
+            no-close-on-backdrop
+            @hide-modal="hideModalAdd"
+            @submit-form-add="submitFormAdd"
+          ></FormAddBillInfo>
+        </b-modal>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
-// import { FormEditCustomer } from '@/components/uncommon'
+import { FormEditCustomer , FormAddBillInfo } from '@/components/uncommon'
+
 export default {
   layout: 'admin',
   components: {
-    // FormEditCustomer,
+    FormEditCustomer,
+    FormAddBillInfo
   },
   middleware: 'authorization',
   permissions: ['CUSTOMER_READ'],
@@ -206,6 +230,7 @@ export default {
   computed: {
     ...mapState({
       stateCustomer: (state) => state.customer,
+      stateBillInfo: (state) => state.billInfo,
     }),
     currentPage: {
       get() {
@@ -245,9 +270,10 @@ export default {
     console.log(this.stateCustomer.customers)
   },
   methods: {
-    ...mapActions(['fetchDataCustomers']),
+    ...mapActions(['fetchDataCustomers', 'fetchDataCustomer','addBillInfo']),
     ...mapMutations({
       setCustomerQuery: 'SET_CUSTOMER_QUERY',
+      setBillInfoQuery: 'SET_BILL_INFO_QUERY',
     }),
     sortingChanged(ctx) {
       const fieldSort = ctx.sortBy
@@ -278,8 +304,30 @@ export default {
         query: { s: this.selectedFieldSearch, q: this.searchKeyword },
       })
     },
+    async submitFormAdd(form) {
+      try {
+        this.processing = true
+        console.log('Add Bill Info clicked - Add Bill Info: ', form)
+        this.stateBillInfo.query.type = 'CUSTOMER'
+        await this.addBillInfo(form)
+        this.$fetch()
+        this.$refs['modal-add'].hide()
+        this.$toast.success('Create successful')
+      } catch (e) {
+        this.$toast.error(e)
+      }
+    },
+    async fillDataFormAddBillInfo(id) {
+      await this.fetchDataCustomer(id)
+      this.$refs['modal-add'].show()
+    },
+    hideModalAdd() {
+      this.$refs['modal-add'].hide()
+    },
 
     onCreate() {},
+
+    
   },
 }
 </script>

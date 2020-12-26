@@ -101,6 +101,19 @@
               </div>
             </b-card-body>
           </b-card>
+          <div class="separator mb-5" />
+          <b-card v-if="stateProviders.provider.billInfos" no-body>
+            <b-card-body>
+              <div class="pt-4">
+                <p class="text-muted text-small mb-2">
+                  Bill Infos
+                </p>
+                <li v-for="billInfo in stateProviders.provider.billInfos" :key="billInfo.id" class="mb-3">
+                  Bank: {{ billInfo.bankName }} - Bank Account: {{ billInfo.bankAccount }}
+                </li>
+              </div>
+            </b-card-body>
+          </b-card>
         </b-col>
       </b-row>
       <div>
@@ -159,7 +172,6 @@ export default {
   async fetch() {
     this.setProviderQuery(this.$route.query)
     await this.fetchDataProvider(this.$route.params.id)
-    await this.fetchDataBillInfos()
     this.is_data_fetched = true
   },
   data() {
@@ -172,7 +184,7 @@ export default {
   computed: {
     ...mapState({
       stateProviders: (state) => state.providers,
-      stateBill: (state) => state.billInfo,
+      stateBillInfo: (state) => state.billInfo,
     }),
   },
   watch: {
@@ -208,6 +220,7 @@ export default {
       try {
         this.processing = true
         console.log('Add Bill Info clicked - Add Bill Info: ', form)
+        this.stateBillInfo.query.type = 'PROVIDER'
         await this.addBillInfo(form)
         this.$fetch()
         this.$refs['modal-add'].hide()

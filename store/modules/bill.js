@@ -6,7 +6,7 @@ export default {
     query: {
 			page: 1,
       limit: 10,
-      filter: 'userId||$notnull',
+      filter: '',
 			// sort: 'fullName,ASC',
 			// s: null,
     },

@@ -10,8 +10,8 @@ export default {
           'https://maps.googleapis.com/maps/api/geocode/json',
           {
             params: {
-              address: payload.address,
               key: "AIzaSyCv45asCJthye8h1mrrDxl66PBzUnBcbzA",
+              address: payload.address,
             },
           }
         )

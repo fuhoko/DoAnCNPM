@@ -82,6 +82,20 @@ export default {
         throw e.response.data.message[0].description
       }
     },
+
+    async updateService({ state }, payload) {
+      try {
+        await this.$axios.patch(
+          `/v1/services/${state.serviceSelected.id}`,
+          payload,
+          {
+            headers: { authorization: 'Bearer ' + this.$cookies.get('token') },
+          }
+        )
+      } catch (e) {
+        throw e.response.data.message[0].description
+      }
+    },
     async fetchDataService({ commit, state }, payload) {
       try {
         const response = await this.$axios.get(`/v1/services/${payload}`, {

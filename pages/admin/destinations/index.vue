@@ -33,6 +33,11 @@
           </b-row>
           <div class="ml-auto">
             <b-button
+            v-if="
+              stateAuth.currentUser.role.permissions.some(
+                (item) => item.name === 'DESTINATION_CREATE' || item.name === 'ALL'
+              )
+            "
               v-b-modal.modal-create
               size="sm"
               variant="outline-main-color"
@@ -47,6 +52,11 @@
               >
             </b-button>
             <b-button
+            v-if="
+              stateAuth.currentUser.role.permissions.some(
+                (item) => item.name === 'DESTINATION_DELETE' || item.name === 'ALL'
+              )
+            "
               size="sm"
               :class="{
                 'btn-multiple-state': true,
@@ -173,6 +183,11 @@
           </template>
           <template v-slot:cell(action)="{ item }">
             <b-button
+            v-if="
+              stateAuth.currentUser.role.permissions.some(
+                (item) => item.name === 'DESTINATION_UPDATE' || item.name === 'ALL'
+              )
+            "
               variant="outline-main-color"
               size="sm"
               @click="fillFormEditDestination(item.id)"
@@ -212,13 +227,19 @@
       </b-modal>
     </div>
     <div>
-      <b-modal id="modal-create" ref="modal-create" hide-footer size="lg">
+      <b-modal
+        id="modal-create"
+        ref="modal-create"
+        no-enforce-focus
+        hide-footer
+        size="lg"
+      >
         <multi-step-edit-destination
           :processing="processing"
           @onSubmit="onCreate"
         ></multi-step-edit-destination>
       </b-modal>
-      <b-modal ref="modal-update" hide-footer size="lg">
+      <b-modal ref="modal-update" no-enforce-focus hide-footer size="lg">
         <multi-step-edit-destination
           :processing="processing"
           :destination="stateDestination.destinationSelected"
@@ -237,12 +258,13 @@ import { MultiStepEditDestination } from '@/components/uncommon'
 import { fileMixin } from '@/mixins'
 export default {
   layout: 'admin',
-  middleware: 'authenticated',
   components: {
     GoogleMap,
     MultiStepEditDestination,
   },
   mixins: [fileMixin],
+  middleware: 'authorization',
+  permissions: ['DESTINATION_READ'],
   async fetch() {
     try {
       this.setDestinationQuery(this.$route.query)
@@ -277,6 +299,7 @@ export default {
   },
   computed: {
     ...mapState({
+      stateAuth: (state) => state.auth,
       stateDestination: (state) => state.destination,
     }),
     currentPage: {

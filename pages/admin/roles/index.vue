@@ -142,13 +142,7 @@ import { FormEditRole } from '@/components/uncommon'
 export default {
   layout: 'admin',
   middleware: 'authorization',
-  permissions: [
-    'ROLE_READ',
-    'ROLE_REPLACE',
-    'ROLE_SOFT_DEL',
-    'ROLE_DELETE',
-    'ROLE_RESTORE',
-  ],
+  permissions: ['ROLE_READ'],
   components: {
     Breadcrumb,
     FormEditRole,
@@ -245,7 +239,7 @@ export default {
       try {
         this.processing = true
         await this.deleteRole(this.selected)
-        this.selected = 0
+        this.selected = []
         this.$fetch()
         this.$toast.success('Delete successful')
       } catch (e) {

@@ -1,5 +1,6 @@
 <template>
   <b-card no-body>
+    <b-overlay :show="processing" spinner-variant="main-color" no-wrap />
     <b-card-body class="wizard wizard-default">
       <form-wizard :top-nav-disabled="true" :with-validate="true">
         <tab
@@ -49,7 +50,8 @@
                 >
                   <b-form-group label="Title" class="mb-7">
                     <b-form-input
-                      v-model.trim="form.enTitle"
+                      v-model="form.enTitle"
+                      trim
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -64,7 +66,8 @@
                 >
                   <b-form-group label="Description" class="mb-7">
                     <b-form-input
-                      v-model.trim="form.enDescription"
+                      v-model="form.enDescription"
+                      trim
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -72,21 +75,13 @@
                     }}</b-form-invalid-feedback>
                   </b-form-group>
                 </validation-provider>
-                <validation-provider
-                  v-slot="validationContext"
-                  name="Content"
-                  :rules="{ required: true }"
-                >
-                  <b-form-group label="Content" class="mb-7">
-                    <b-form-input
-                      v-model.trim="form.enContent"
-                      :state="getValidationState(validationContext)"
-                    />
-                    <b-form-invalid-feedback>{{
-                      validationContext.errors[0]
-                    }}</b-form-invalid-feedback>
-                  </b-form-group>
-                </validation-provider>
+                <b-form-group label="Content" class="mb-7">
+                  <editor
+                    v-model="form.enContent"
+                    api-key="pyehxhli5mudohyd3tknd30z40s13zol8mcvt61tzcf9q2mp"
+                    :init="initTinymce"
+                  />
+                </b-form-group>
               </b-form>
             </validation-observer>
           </div>
@@ -102,7 +97,8 @@
                 >
                   <b-form-group label="Title" class="mb-7">
                     <b-form-input
-                      v-model.trim="form.viTitle"
+                      v-model="form.viTitle"
+                      trim
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -117,7 +113,8 @@
                 >
                   <b-form-group label="Description" class="mb-7">
                     <b-form-input
-                      v-model.trim="form.viDescription"
+                      v-model="form.viDescription"
+                      trim
                       :state="getValidationState(validationContext)"
                     />
                     <b-form-invalid-feedback>{{
@@ -125,21 +122,13 @@
                     }}</b-form-invalid-feedback>
                   </b-form-group>
                 </validation-provider>
-                <validation-provider
-                  v-slot="validationContext"
-                  name="Content"
-                  :rules="{ required: true }"
-                >
-                  <b-form-group label="Content" class="mb-7">
-                    <b-form-input
-                      v-model.trim="form.viContent"
-                      :state="getValidationState(validationContext)"
-                    />
-                    <b-form-invalid-feedback>{{
-                      validationContext.errors[0]
-                    }}</b-form-invalid-feedback>
-                  </b-form-group>
-                </validation-provider>
+                <b-form-group label="Content" class="mb-7">
+                  <editor
+                    v-model="form.viContent"
+                    api-key="pyehxhli5mudohyd3tknd30z40s13zol8mcvt61tzcf9q2mp"
+                    :init="initTinymce"
+                  />
+                </b-form-group>
               </b-form>
             </validation-observer>
           </div>
@@ -175,7 +164,8 @@
                             :rules="{ required: true }"
                           >
                             <b-form-input
-                              v-model.trim="form.unit"
+                              v-model="form.unit"
+                              trim
                               :state="getValidationState(validationContext)"
                               placeholder="Unit"
                             />
@@ -210,7 +200,8 @@
                             :rules="{ required: true }"
                           >
                             <b-form-input
-                              v-model.trim="form.unit"
+                              v-model="form.unit"
+                              trim
                               :state="getValidationState(validationContext)"
                               placeholder="Unit"
                             />
@@ -245,7 +236,8 @@
                             :rules="{ required: true }"
                           >
                             <b-form-input
-                              v-model.trim="form.unit"
+                              v-model="form.unit"
+                              trim
                               :state="getValidationState(validationContext)"
                               placeholder="Unit"
                             />
@@ -256,7 +248,7 @@
                   </b-col>
                 </b-row>
                 <b-form-group label="Note" class="mb-7">
-                  <b-form-input v-model.trim="form.note" />
+                  <b-form-input v-model="form.note" trim />
                 </b-form-group>
                 <label>Categories</label>
                 <treeselect
@@ -298,40 +290,54 @@
         </tab>
         <tab name="Step 5" desc="Gallery">
           <div class="wizard-basic-step">
-            <validation-provider
-              ref="formChild5"
-              v-slot="validationContext"
-              name="Thumbnail"
-              :rules="{ image: true }"
-            >
-              <b-form-group label="Name" class="mb-7">
-                <b-form-file
-                  v-model="gallery"
-                  accept="image/*"
-                  :state="getValidationState(validationContext)"
-                  multiple
-                  @change="setGallery"
-                ></b-form-file>
-                <b-form-invalid-feedback>{{
-                  validationContext.errors[0]
-                }}</b-form-invalid-feedback>
-              </b-form-group>
-            </validation-provider>
+            <b-form-group label="Gallery" class="mb-7">
+              <b-form-file
+                accept="image/*"
+                multiple
+                class="upload-gallery"
+                @change="setGallery"
+              ></b-form-file>
+            </b-form-group>
             <div class="text-center">
+              <b-overlay :show="loadingGallery" no-wrap />
               <b-carousel
-                :interval="4000"
+                :interval="0"
                 class="my-5"
                 controls
                 indicators
                 @sliding-start="onSlideStart"
                 @sliding-end="onSlideEnd"
               >
-                <b-carousel-slide
-                  v-for="(el, index) in previewGallery"
-                  :key="index"
-                  :img-src="el"
-                >
-                </b-carousel-slide>
+                <template v-for="(el, index) in form.gallery">
+                  <b-overlay :key="index" :show="loadingImage[index]" no-wrap />
+                  <b-carousel-slide :key="`slide-${index}`" :img-src="el">
+                    <div class="absolute d-flex">
+                      <input
+                        ref="fileInput"
+                        type="file"
+                        class="d-none"
+                        accept="image/*"
+                        @change="
+                          (e) => editGallery(e.target.files[0], el, index)
+                        "
+                      />
+                      <div
+                        class="bg-dark d-flex justify-content-center align-items-center"
+                        style="width: 40px; height: 40px; cursor: pointer;"
+                        @click="$refs.fileInput[index].click()"
+                      >
+                        <b-icon icon="pencil" font-scale="1.8"></b-icon>
+                      </div>
+                      <div
+                        class="bg-dark d-flex justify-content-center align-items-center ml-2"
+                        style="width: 40px; height: 40px; cursor: pointer;"
+                        @click="removeImgGallery(index)"
+                      >
+                        <b-icon icon="trash" font-scale="1.8"></b-icon>
+                      </div>
+                    </div>
+                  </b-carousel-slide>
+                </template>
               </b-carousel>
             </div>
           </div>
@@ -363,12 +369,16 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import Editor from '@tinymce/tinymce-vue'
 import Treeselect, { ASYNC_SEARCH } from '@riophae/vue-treeselect'
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { Tab, FormWizard } from '@/components/common'
+import { fileMixin } from '@/mixins'
 export default {
-  components: { FormWizard, Tab, Treeselect },
+  components: { FormWizard, Tab, Treeselect, Editor },
+  mixins: [fileMixin],
   props: {
     processing: {
       type: Boolean,
@@ -412,10 +422,20 @@ export default {
           label: node.email,
         }
       },
+      initTinymce: {
+        height: 400,
+        menubar: false,
+        plugins: 'code',
+        toolbar: `undo redo | formatselect | bold italic backcolor | \
+          alignleft aligncenter alignright alignjustify | \
+          bullist numlist outdent indent | removeformat | image | code`,
+      },
       imageUrl: this.service?.thumbnail ?? '',
       file: null,
-      gallery: [],
-      previewGallery: this.service?.gallery ?? [],
+      // gallery: [],
+      // previewGallery: this.service?.gallery ?? [],
+      loadingGallery: false,
+      loadingImage: this.service?.gallery.map(() => false) ?? [],
       form: {
         enTitle: this.service?.enTitle ?? '',
         enDescription: this.service?.enDescription ?? '',
@@ -433,6 +453,7 @@ export default {
         providerIds: this.service?.providers.map((item) => item.id) ?? [],
         unit: this.service?.unit ?? '',
         note: this.service?.note ?? '',
+        gallery: this.service?.gallery ?? [],
       },
     }
   },
@@ -443,9 +464,6 @@ export default {
     serviceProviders() {
       return this.service?.providers ?? []
     },
-  },
-  created() {
-    console.log(this.service)
   },
   methods: {
     getValidationState({ dirty, validated, valid = null }) {
@@ -464,13 +482,29 @@ export default {
         })
       }
     },
-    setGallery(e) {
+    async setGallery(e) {
+      this.loadingGallery = true
       const files = Object.values(e.target.files)
-      files.forEach((item) => {
-        this.getBase64(item, (imageUrl) => {
-          this.previewGallery.push(imageUrl)
-        })
-      })
+      const gallery = await this.uploadFilesToS3(files, 'Gallery')
+      this.form.gallery = this.form.gallery.concat(gallery)
+      this.loadingImage = this.form.gallery.map(() => false)
+      console.log(this.loadingImage)
+      this.$forceUpdate()
+      this.loadingGallery = false
+    },
+
+    async editGallery(file, url, index) {
+      Vue.set(this.loadingImage, index, true)
+      this.form.gallery[index] = await this.uploadFileToS3(file, 'Gallery')
+      await this.$forceUpdate()
+      Vue.set(this.loadingImage, index, false)
+    },
+
+    removeImgGallery(index) {
+      const gallery = this.form.gallery.filter(
+        (item) => item !== this.form.gallery[index]
+      )
+      Vue.set(this.form, 'gallery', gallery)
     },
 
     async loadDestinationOptions({ action, searchQuery, callback }) {
@@ -509,7 +543,7 @@ export default {
       return this.$refs.formChild4.validate()
     },
     done() {
-      this.$emit('onSubmit', this.file, this.form, this.gallery)
+      this.$emit('onSubmit', this.file, this.form)
     },
   },
 }
@@ -521,9 +555,27 @@ export default {
     padding-right: 0.65rem;
   }
 }
-.container-categories {
-  .ps {
-    height: 408px;
+::v-deep .carousel-caption {
+  left: 10px;
+  top: 0;
+  padding: 0;
+}
+::v-deep .image-container {
+  width: 100%;
+  height: 300px;
+  > div {
+    height: 100%;
+    .preview-image {
+      height: 100%;
+      .show-img {
+        max-height: none;
+        max-width: 100%;
+      }
+    }
   }
+}
+::v-deep .image-list-container .image-list-item {
+  height: 50px;
+  width: 50px;
 }
 </style>

@@ -11,7 +11,7 @@ export default {
           {
             params: {
               address: payload.address,
-              key: 'AIzaSyCv45asCJthye8h1mrrDxl66PBzUnBcbzA',
+              key: "AIzaSyCv45asCJthye8h1mrrDxl66PBzUnBcbzA",
             },
           }
         )

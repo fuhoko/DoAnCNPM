@@ -14,8 +14,7 @@
                 ? false
                 : validationContext.valid
                 ? true
-                : null
-            "
+                : null"
           />
           <b-form-invalid-feedback>{{
             validationContext.errors[0]
@@ -36,15 +35,35 @@
                 ? false
                 : validationContext.valid
                 ? true
-                : null
-            "
+                : null"
           />
           <b-form-invalid-feedback>{{
             validationContext.errors[0]
           }}</b-form-invalid-feedback>
         </b-form-group>
       </validation-provider>
-
+      <validation-provider
+        v-slot="validationContext"
+        name="Avatar"
+        :rules="{ required: true }"
+      >
+        <b-form-group :label="`Avatar`">
+          <b-form-file
+            v-model="file"
+            :state="
+            validationContext.errors[0]
+            ? false
+            : validationContext.valid
+            ? true
+            : null"
+            accept="image/*"
+            @change="handleChange"
+          ></b-form-file>
+        </b-form-group>
+        <b-form-invalid-feedback>{{
+        validationContext.errors[0]
+        }}</b-form-invalid-feedback>
+      </validation-provider>
       <b-form-group :label="`Role`">
         <b-form-select v-model="form.roleId" class="mb-3">
           <b-form-select-option
@@ -72,8 +91,7 @@
                 ? false
                 : validationContext.valid
                 ? true
-                : null
-            "
+                : null"
             class="mb-2"
             @context="onContext"
           ></b-form-datepicker>
@@ -84,6 +102,12 @@
       </validation-provider>
       <b-form-group :label="`Phone number`">
         <b-form-input v-model="form.phone" />
+      </b-form-group>
+      <b-form-group :label="`Bio`">
+        <b-form-input v-model="form.bio" />
+      </b-form-group>
+      <b-form-group :label="`Note`">
+        <b-form-input v-model="form.note" />
       </b-form-group>
       <b-form-group :label="`Status`">
         <b-form-radio-group
@@ -123,9 +147,13 @@ export default {
           email: '',
           status: '',
           gender: '',
+          avatar: '',
           birthday: '',
           roleId: 0,
           phone: '',
+          bio: '',
+          note: '',
+          password: '',
         }
       },
     },
@@ -144,12 +172,18 @@ export default {
         gender: this.user.gender,
         birthday: this.user.birthday,
         roleId: this.user.role.id ?? null,
+        avatar: this.user.avatar,
         phone: this.user.phone,
+        bio: this.user.bio,
+        note: this.user.note,
+        password: this.user.password,
       },
       moment,
       value: '',
       genderChoice: ['MALE', 'FEMALE'],
       statuses: ['ACTIVE', 'PENDING', 'INACTIVE'],
+      file: null,
+      imageUrl: '',
     }
   },
   methods: {
@@ -161,6 +195,20 @@ export default {
     },
     onContext(ctx) {
       this.form.birthday = moment(ctx.selectedYMD, moment.ISO_8601)
+    },
+    getBase64(img, callback) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => callback(reader.result))
+      reader.readAsDataURL(img)
+    },
+    handleChange(e) {
+      const file = e.target.files[0]
+      if (file) {
+        this.getBase64(file, (imageUrl) => {
+          this.imageUrl = imageUrl
+          this.form.avatar = imageUrl
+        })
+      }
     },
   },
 }

@@ -44,6 +44,7 @@ export default {
       }
     },
     async addPayment({ commit }, payload) {
+      console.log(payload)
       try {
         const response = await this.$axios.post('/v1/payments', payload, {
           headers: { authorization: 'Bearer ' + this.$cookies.get('token') },

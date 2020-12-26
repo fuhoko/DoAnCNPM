@@ -149,7 +149,7 @@ export default {
             },
           },
           hidden: !this.$store.state.auth.currentUser.role.permissions.some(
-            (item) => item.name === 'SERVICES_READ' || item.name === 'ALL'
+            (item) => item.name === 'SERVICE_READ' || item.name === 'ALL'
           ),
         },
         {

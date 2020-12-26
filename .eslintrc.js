@@ -21,6 +21,7 @@ module.exports = {
         'no-console': 'off',
         'vue/require-prop-types': 0,
         'vue/prop-name-casing': 0,
+        'prettier/prettier': 0,
         'vue/no-v-html': 'off'
     },
 }

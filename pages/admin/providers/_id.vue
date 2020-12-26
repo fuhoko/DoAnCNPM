@@ -8,7 +8,7 @@
         <b-col xxs="12" lg="5" xl="4" class="col-left">
           <b-card class="mb-4" no-body>
             <b-card-body>
-              <b-img :src="stateProviders.provider.avatar" center />
+              <b-img :src="stateProviders.provider.avatar" fluid center />
               <div class="text-center pt-4 mb-10">
                 <p class="list-item-heading pt-2 mb-5">
                   {{ stateProviders.provider.name }}

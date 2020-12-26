@@ -11,7 +11,7 @@ export default {
           {
             params: {
               address: payload.address,
-              key: process.env.KEY_GOOGLE_API,
+              key: "AIzaSyCv45asCJthye8h1mrrDxl66PBzUnBcbzA",
             },
           }
         )

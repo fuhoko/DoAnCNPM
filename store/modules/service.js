@@ -9,6 +9,7 @@ export default {
       sort: null,
     },
     total: 0,
+    pageCount: 0,
     serviceSelected: null,
   },
 
@@ -21,6 +22,9 @@ export default {
     },
     SET_SERVICE_TOTAL(state, payload) {
       state.total = payload
+    },
+    SET_SERVICE_PAGE_COUNT(state, payload) {
+      state.pageCount = payload
     },
     SET_SERVICE_QUERY(state, query) {
       state.query = { ...state.query, ...{ limit: 10, page: query.page } }
@@ -47,6 +51,7 @@ export default {
         })
         commit('SET_SERVICES', response.data.data)
         commit('SET_SERVICE_TOTAL', response.data.total)
+        commit('SET_SERVICE_PAGE_COUNT', response.data.pageCount)
       } catch (e) {
         throw e.response.data.message[0].description
       }
